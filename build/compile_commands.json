@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/Users/noahdubuc/Codes/fluidSim/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/noahdubuc/Codes/fluidSim/include -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/SimulationDeFluide.dir/src/main.cpp.o -c /Users/noahdubuc/Codes/fluidSim/src/main.cpp",
+  "file": "/Users/noahdubuc/Codes/fluidSim/src/main.cpp",
+  "output": "CMakeFiles/SimulationDeFluide.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/noahdubuc/Codes/fluidSim/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/noahdubuc/Codes/fluidSim/include -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/SimulationDeFluide.dir/src/Start.cpp.o -c /Users/noahdubuc/Codes/fluidSim/src/Start.cpp",
+  "file": "/Users/noahdubuc/Codes/fluidSim/src/Start.cpp",
+  "output": "CMakeFiles/SimulationDeFluide.dir/src/Start.cpp.o"
+},
+{
+  "directory": "/Users/noahdubuc/Codes/fluidSim/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/noahdubuc/Codes/fluidSim/include -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/SimulationDeFluide.dir/src/Balle.cpp.o -c /Users/noahdubuc/Codes/fluidSim/src/Balle.cpp",
+  "file": "/Users/noahdubuc/Codes/fluidSim/src/Balle.cpp",
+  "output": "CMakeFiles/SimulationDeFluide.dir/src/Balle.cpp.o"
+},
+{
+  "directory": "/Users/noahdubuc/Codes/fluidSim/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/noahdubuc/Codes/fluidSim/include -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/SimulationDeFluide.dir/src/Box.cpp.o -c /Users/noahdubuc/Codes/fluidSim/src/Box.cpp",
+  "file": "/Users/noahdubuc/Codes/fluidSim/src/Box.cpp",
+  "output": "CMakeFiles/SimulationDeFluide.dir/src/Box.cpp.o"
+},
+{
+  "directory": "/Users/noahdubuc/Codes/fluidSim/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/noahdubuc/Codes/fluidSim/include -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/SimulationDeFluide.dir/src/StartRandom.cpp.o -c /Users/noahdubuc/Codes/fluidSim/src/StartRandom.cpp",
+  "file": "/Users/noahdubuc/Codes/fluidSim/src/StartRandom.cpp",
+  "output": "CMakeFiles/SimulationDeFluide.dir/src/StartRandom.cpp.o"
+}
+]

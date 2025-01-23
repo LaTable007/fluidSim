@@ -1,0 +1,34 @@
+#ifndef BALLE_HPP
+#define BALLE_HPP
+
+#include <SFML/Graphics.hpp>
+
+class Balle {
+private:
+  sf::CircleShape shape; // Forme graphique de la balle
+  sf::Vector2f velocity; // Vitesse de la balle
+  float radius;
+  sf::Vector2f position;
+
+public:
+  // Constructeur
+  Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity);
+
+  // Méthode pour mettre à jour la position
+  void update(float dt);
+
+  // Méthode pour dessiner la balle
+  void draw(sf::RenderWindow &window);
+
+  // Getter pour la position
+  sf::Vector2f getPosition() const;
+
+  sf::Vector2f getVelocity() const; // Nouvelle méthode
+
+  void setVelocity(sf::Vector2f vel);
+
+  // Ajouter la méthode getRadius pour obtenir le rayon de la balle
+  float getRadius() const;
+};
+
+#endif
