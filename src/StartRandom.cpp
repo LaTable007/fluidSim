@@ -1,6 +1,6 @@
-#include "StartRandom.h"
-#include "Balle.h"
-#include "Box.h"
+#include "../include/StartRandom.h"
+#include "../include/Balle.h"
+#include "../include/Box.h"
 #include <random>
 
 float generateRandomFloat(float min, float max) {

@@ -36,6 +36,8 @@ public:
 
   // Ajouter la méthode getRadius pour obtenir le rayon de la balle
   float getRadius() const;
+
+  void setRadius(float radius);
 };
 
 #endif

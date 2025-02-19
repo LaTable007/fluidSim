@@ -1,11 +1,23 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/noahdubuc/Codes/fluidSim -B /Users/noahdubuc/Codes/fluidSim/cmake-build-debug
--- The CXX compiler identification is AppleClang 16.0.0.16000026
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Found SFML 2.6.1 in /opt/homebrew/lib/cmake/SFML
--- Configuring done (0.8s)
--- Generating done (0.0s)
+-- Fetching SFML...
+CMake Deprecation Warning at cmake-build-debug/_deps/sfml-src/CMakeLists.txt:5 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Warning (dev) at cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:51 (EXEC_PROGRAM):
+  Policy CMP0153 is not set: The exec_program command should not be called.
+  Run "cmake --help-policy CMP0153" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Use execute_process() instead.
+Call Stack (most recent call first):
+  cmake-build-debug/_deps/sfml-src/CMakeLists.txt:48 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Configuring done (0.5s)
+-- Generating done (0.1s)
 -- Build files have been written to: /Users/noahdubuc/Codes/fluidSim/cmake-build-debug

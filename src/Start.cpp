@@ -1,5 +1,5 @@
-#include "Start.h"
-#include "Balle.h"
+#include "../include/Start.h"
+#include "../include/Balle.h"
 #include <cmath>
 #include <iostream>
 #include <vector>

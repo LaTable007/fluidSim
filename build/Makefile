@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\" \"bin\" \"devel\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/noahdubuc/Codes/fluidSim/build/CMakeFiles /Users/noahdubuc/Codes/fluidSim/build//CMakeFiles/progress.marks
@@ -117,6 +162,58 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named sfml-system
+
+# Build rule for target.
+sfml-system: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sfml-system
+.PHONY : sfml-system
+
+# fast build rule for target.
+sfml-system/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/sfml-build/src/SFML/System/CMakeFiles/sfml-system.dir/build.make _deps/sfml-build/src/SFML/System/CMakeFiles/sfml-system.dir/build
+.PHONY : sfml-system/fast
+
+#=============================================================================
+# Target rules for targets named sfml-window
+
+# Build rule for target.
+sfml-window: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sfml-window
+.PHONY : sfml-window
+
+# fast build rule for target.
+sfml-window/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/sfml-build/src/SFML/Window/CMakeFiles/sfml-window.dir/build.make _deps/sfml-build/src/SFML/Window/CMakeFiles/sfml-window.dir/build
+.PHONY : sfml-window/fast
+
+#=============================================================================
+# Target rules for targets named sfml-graphics
+
+# Build rule for target.
+sfml-graphics: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sfml-graphics
+.PHONY : sfml-graphics
+
+# fast build rule for target.
+sfml-graphics/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/sfml-build/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/build.make _deps/sfml-build/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/build
+.PHONY : sfml-graphics/fast
+
+#=============================================================================
+# Target rules for targets named ImGui-SFML
+
+# Build rule for target.
+ImGui-SFML: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ImGui-SFML
+.PHONY : ImGui-SFML
+
+# fast build rule for target.
+ImGui-SFML/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/imgui-sfml-build/CMakeFiles/ImGui-SFML.dir/build.make _deps/imgui-sfml-build/CMakeFiles/ImGui-SFML.dir/build
+.PHONY : ImGui-SFML/fast
+
+#=============================================================================
 # Target rules for targets named SimulationDeFluide
 
 # Build rule for target.
@@ -126,128 +223,8 @@ SimulationDeFluide: cmake_check_build_system
 
 # fast build rule for target.
 SimulationDeFluide/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/build
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/SimulationDeFluide.dir/build.make src/CMakeFiles/SimulationDeFluide.dir/build
 .PHONY : SimulationDeFluide/fast
-
-src/Balle.o: src/Balle.cpp.o
-.PHONY : src/Balle.o
-
-# target to build an object file
-src/Balle.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Balle.cpp.o
-.PHONY : src/Balle.cpp.o
-
-src/Balle.i: src/Balle.cpp.i
-.PHONY : src/Balle.i
-
-# target to preprocess a source file
-src/Balle.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Balle.cpp.i
-.PHONY : src/Balle.cpp.i
-
-src/Balle.s: src/Balle.cpp.s
-.PHONY : src/Balle.s
-
-# target to generate assembly for a file
-src/Balle.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Balle.cpp.s
-.PHONY : src/Balle.cpp.s
-
-src/Box.o: src/Box.cpp.o
-.PHONY : src/Box.o
-
-# target to build an object file
-src/Box.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Box.cpp.o
-.PHONY : src/Box.cpp.o
-
-src/Box.i: src/Box.cpp.i
-.PHONY : src/Box.i
-
-# target to preprocess a source file
-src/Box.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Box.cpp.i
-.PHONY : src/Box.cpp.i
-
-src/Box.s: src/Box.cpp.s
-.PHONY : src/Box.s
-
-# target to generate assembly for a file
-src/Box.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Box.cpp.s
-.PHONY : src/Box.cpp.s
-
-src/Start.o: src/Start.cpp.o
-.PHONY : src/Start.o
-
-# target to build an object file
-src/Start.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Start.cpp.o
-.PHONY : src/Start.cpp.o
-
-src/Start.i: src/Start.cpp.i
-.PHONY : src/Start.i
-
-# target to preprocess a source file
-src/Start.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Start.cpp.i
-.PHONY : src/Start.cpp.i
-
-src/Start.s: src/Start.cpp.s
-.PHONY : src/Start.s
-
-# target to generate assembly for a file
-src/Start.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/Start.cpp.s
-.PHONY : src/Start.cpp.s
-
-src/StartRandom.o: src/StartRandom.cpp.o
-.PHONY : src/StartRandom.o
-
-# target to build an object file
-src/StartRandom.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/StartRandom.cpp.o
-.PHONY : src/StartRandom.cpp.o
-
-src/StartRandom.i: src/StartRandom.cpp.i
-.PHONY : src/StartRandom.i
-
-# target to preprocess a source file
-src/StartRandom.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/StartRandom.cpp.i
-.PHONY : src/StartRandom.cpp.i
-
-src/StartRandom.s: src/StartRandom.cpp.s
-.PHONY : src/StartRandom.s
-
-# target to generate assembly for a file
-src/StartRandom.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/StartRandom.cpp.s
-.PHONY : src/StartRandom.cpp.s
-
-src/main.o: src/main.cpp.o
-.PHONY : src/main.o
-
-# target to build an object file
-src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
-
-src/main.i: src/main.cpp.i
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
-
-src/main.s: src/main.cpp.s
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimulationDeFluide.dir/build.make CMakeFiles/SimulationDeFluide.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -256,23 +233,16 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... ImGui-SFML"
 	@echo "... SimulationDeFluide"
-	@echo "... src/Balle.o"
-	@echo "... src/Balle.i"
-	@echo "... src/Balle.s"
-	@echo "... src/Box.o"
-	@echo "... src/Box.i"
-	@echo "... src/Box.s"
-	@echo "... src/Start.o"
-	@echo "... src/Start.i"
-	@echo "... src/Start.s"
-	@echo "... src/StartRandom.o"
-	@echo "... src/StartRandom.i"
-	@echo "... src/StartRandom.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... sfml-graphics"
+	@echo "... sfml-system"
+	@echo "... sfml-window"
 .PHONY : help
 
 

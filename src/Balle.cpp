@@ -1,4 +1,4 @@
-#include "Balle.h"
+#include "../include/Balle.h"
 #include <SFML/Graphics.hpp>
 
 
@@ -119,6 +119,11 @@ float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius)
         density += mass * influence;
     }
     return density;
+}
+
+void Balle::setRadius(float radius) {
+    shape.setRadius(radius);
+    shape.setOrigin(radius, radius); // Update origin to keep the ball centered
 }
 // Récupérer la position
 sf::Vector2f Balle::getPosition() const { return shape.getPosition(); }
