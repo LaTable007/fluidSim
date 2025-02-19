@@ -22,6 +22,10 @@ public:
 
   void updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b);
 
+  float smoothingKernel(float radius, float dst);
+
+  float calculateDensity(std::vector<Balle> &balles, float smoothingRadius);
+
   // Getter pour la position
   sf::Vector2f getPosition() const;
 

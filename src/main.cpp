@@ -17,7 +17,7 @@ int main() {
 
   // Paramètres pour les balles
   float ballRadius = 25.f;
-  int numParticles = 500;
+  int numParticles = 1000;
   float dampingRatio = 0.7f;
   float gravity = 10.f;
 

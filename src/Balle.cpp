@@ -1,6 +1,7 @@
 #include "Balle.h"
 #include <SFML/Graphics.hpp>
 
+
 // Constructeur
 Balle::Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity)
     : shape(radius), velocity(startVelocity) {
@@ -8,8 +9,6 @@ Balle::Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity)
   shape.setFillColor(sf::Color::Red); // Couleur rouge par défaut
 }
 
-int layers = 10; // Nombre de couches pour l'effet de flou
-sf::Color blurColor = sf::Color(173, 216, 230, 255);
 
 // Mise à jour manuelle de la position
 void Balle::update(float dt) {
@@ -102,8 +101,25 @@ void Balle::updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b) {
     }
 }
 
+float Balle::smoothingKernel(float radius, float dst) {
+    float volume = 3.14159265359f * pow(radius, 8) / 4;
+    float value = std::max(0.0f, radius*radius - dst*dst);
+    return value*value*value / volume;
+}
 
-
+float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius) {
+    float density = 0.0f;
+    float mass = 1.0f;
+    sf::Vector2f position = shape.getPosition();
+    for (auto &balle : balles) {
+        sf::Vector2f samplePoint = balle.getPosition();
+        sf::Vector2f dst = (position - samplePoint);
+        float dstsqrt = sqrt(dst.x*dst.x + dst.y*dst.y);
+        float influence = smoothingKernel(smoothingRadius, dstsqrt);
+        density += mass * influence;
+    }
+    return density;
+}
 // Récupérer la position
 sf::Vector2f Balle::getPosition() const { return shape.getPosition(); }
 
