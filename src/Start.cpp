@@ -15,10 +15,10 @@ void Start(std::vector<Balle> &balles, int numParticles, float ballRadius,
   float gridSpacing = ballRadius * 2 + spacing;
 
   // Plages de coordonnées
-  float minX = 100.f;
-  float maxX = 700.f;
-  float minY = 100.f;
-  float maxY = 500.f;
+  float minX = 50.f;
+  float maxX = 750.f;
+  float minY = 50.f;
+  float maxY = 550.f;
 
   // Calcul des espacements dans les limites données
   float rangeX = maxX - minX;

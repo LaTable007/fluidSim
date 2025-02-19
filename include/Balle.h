@@ -20,12 +20,15 @@ public:
   // Méthode pour dessiner la balle
   void draw(sf::RenderWindow &window);
 
+  void updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b);
+
   // Getter pour la position
   sf::Vector2f getPosition() const;
 
   sf::Vector2f getVelocity() const; // Nouvelle méthode
 
   void setVelocity(sf::Vector2f vel);
+  void setPosition(sf::Vector2f pos);
 
   // Ajouter la méthode getRadius pour obtenir le rayon de la balle
   float getRadius() const;

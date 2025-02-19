@@ -1,5 +1,6 @@
 #include "StartRandom.h"
 #include "Balle.h"
+#include "Box.h"
 #include <random>
 
 float generateRandomFloat(float min, float max) {
@@ -12,15 +13,17 @@ float generateRandomFloat(float min, float max) {
 }
 
 void startRandom(std::vector<Balle> &balles, int numberParticles,
-                 float radius) {
+                 float radius, Box &box) {
+  float left, right, up, down;
+  box.getBounds(&left, &right, &up, &down);
   for (int i = 0; i < numberParticles; i++) {
-    float minx = 000;
-    float maxx = 800 - 2 * radius;
+    float maxx = right - 2 * radius;
+    float minx = left + 2 * radius;
     float x = generateRandomFloat(minx, maxx);
 
-    float miny = 000;
-    float maxy = 600 - 2 * radius;
+    float maxy = down - 2 * radius;
+    float miny = up + 2 * radius;
     float y = generateRandomFloat(miny, maxy);
-    balles.emplace_back(radius, sf::Vector2f(x, y), sf::Vector2f(0, 0));
+    balles.emplace_back(radius, sf::Vector2f(x, y), sf::Vector2f(generateRandomFloat(0, 400), generateRandomFloat(0, 400)));
   };
 };

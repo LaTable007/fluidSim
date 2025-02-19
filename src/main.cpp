@@ -5,26 +5,28 @@
 #include <SFML/Graphics.hpp>
 
 int main() {
-  sf::RenderWindow window(sf::VideoMode(800, 600), "Simulation de Fluide");
+  sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
+  sf::RenderWindow window(fullscreenMode, "Simulation de Fluide", sf::Style::Fullscreen);
 
-  int x1 = 000;
-  int x2 = 800;
-  int y1 = 000;
-  int y2 = 600;
+  float x1 = 50;
+  float x2 = 1390;
+  float y1 = 50;
+  float y2 = 850;
+
+  Box box(x1, x2, y1, y2);
 
   // Paramètres pour les balles
-  float ballRadius = 10.f;
-  int numParticles = 100;
-  float spacing = 5.f;
-  double dampingRatio = 1.0;
-  double gravity = 0.f;
+  float ballRadius = 25.f;
+  int numParticles = 500;
+  float dampingRatio = 0.7f;
+  float gravity = 10.f;
 
   // Liste de balles
   std::vector<Balle> balles;
 
   // Initialiser les balles
   // Start(balles, numParticles, ballRadius, spacing);
-  startRandom(balles, numParticles, ballRadius);
+  startRandom(balles, numParticles, ballRadius, box);
 
   sf::Clock clock;
 
@@ -35,25 +37,17 @@ int main() {
         window.close();
     }
 
-    double delta = clock.restart().asSeconds();
+    float delta = clock.restart().asSeconds();
 
     // Mettre à jour toutes les balles
     for (auto &balle : balles) {
-      balle.update(delta);
 
-      sf::Vector2f pos = balle.getPosition();
       sf::Vector2f vel = balle.getVelocity();
-
-      // Vérifier les collisions avec les bords de la boîte
-      if (pos.x <= x1 || pos.x + 2 * ballRadius >= x2) {
-        vel.x = -vel.x * dampingRatio;
-      }
-      if (pos.y <= y1 || pos.y + 2 * ballRadius >= y2) {
-        vel.y = -vel.y * dampingRatio;
-      }
       vel.y += gravity * delta;
-
       balle.setVelocity(vel);
+      balle.update(delta);
+      box.checkCollision(balle, dampingRatio);
+
     }
 
     // Rendu
@@ -62,6 +56,7 @@ int main() {
       balle.draw(window);
     }
     // box(x1, x2, y1, y2, window);
+    box.draw(window);
     window.display();
   }
   return 0;
