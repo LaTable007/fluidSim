@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(example
+project(SimulationDeFluide
         LANGUAGES CXX
         VERSION 1.0
 )
