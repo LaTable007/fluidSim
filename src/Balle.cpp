@@ -107,6 +107,13 @@ float Balle::smoothingKernel(float radius, float dst) {
     return value*value*value / volume;
 }
 
+float Balle::smoothingKernelDiravative(float radius, float dst) {
+    if (dst >= radius) {return 0;}
+    float f = radius * radius * - dst * dst;
+    float scale = -24.0f / (3.14159265359f * pow(radius, 8));
+    return scale * dst * f * f;
+}
+
 float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius) {
     float density = 0.0f;
     float mass = 1.0f;
@@ -119,6 +126,27 @@ float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius)
         density += mass * influence;
     }
     return density;
+}
+
+sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle, float smoothingRadius, float mass, float targetDensity, float pressureMultiplier) {
+
+    sf::Vector2f pressureForce = sf::Vector2f(0.0f, 0.0f);
+    for (int otherParticleIndex = 0; otherParticleIndex < numParticle; otherParticleIndex++) {
+        if (otherParticleIndex == particleIndex) {continue;}
+        sf::Vector2f dst = (balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition());
+        float dstsqrt = sqrt(dst.x*dst.x + dst.y*dst.y);
+        sf::Vector2f dir = dst/dstsqrt;
+        float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
+        float density = calculateDensity(balles, smoothingRadius);
+        pressureForce += -convertDensityToPressure(density, targetDensity, pressureMultiplier) * dir * slope * mass / density;
+    }
+    return pressureForce;
+}
+
+float Balle::convertDensityToPressure(float density, float targetDensity, float pressureMultiplier) {
+    float densityError = density - targetDensity;
+    float pressure = pressureMultiplier * densityError;
+    return pressure;
 }
 
 void Balle::setRadius(float radius) {

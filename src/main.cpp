@@ -25,15 +25,19 @@ int main() {
   Box box(x1, x2, y1, y2);
 
   // Paramètres pour les balles
-  float ballRadius = 25.f;
-  int numParticles = 1000;
+  float ballRadius = 5.f;
+  int numParticles = 100;
   float dampingRatio = 1.0f;
   float gravity = 0.f;
-  float spacing = 5.0f;
+  float spacing = 10.0f;
   float smoothingRadius = 50.0f;
+  float targetDensity = 1.0f;
+  float pressureMultiplier = 1.0f;
+  float mass = 1.0f;
 
   // Liste de balles
   std::vector<Balle> balles;
+  std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
 
   // Initialiser les balles
   // Start(balles, numParticles, ballRadius, spacing);
@@ -55,27 +59,15 @@ int main() {
     Start(balles, numParticles, ballRadius, spacing, box);
 
     // Mettre à jour toutes les balles
-    for (auto &balle : balles) {
-
-      sf::Vector2f vel = balle.getVelocity();
-      vel.y += gravity * delta;
-      balle.setVelocity(vel);
-      balle.update(delta);
-      box.checkCollision(balle, dampingRatio);
-
+    for (int index = 0; index <= numParticles; index++) {
+      pressureForces[index] = balles[index].calculatePressureForce(balles, index, numParticles, smoothingRadius, mass, targetDensity, pressureMultiplier);
     }
 
-    Balle balleDensité = balles[510];
-    sf::Vector2f position = balleDensité.getPosition();
 
-    float densité = balleDensité.calculateDensity(balles, smoothingRadius);
 
-      ImGui::SFML::Update(window, deltaClock.restart());
+    ImGui::SFML::Update(window, deltaClock.restart());
 
     ImGui::Begin("Simulation Settings");
-    ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 25.0f, 500.0f);
-    ImGui::SliderFloat("Spacing", &spacing, 5.0f, 50.0f);
-    ImGui::Text("Density: %.6f", densité);
     ImGui::End();
 
     window.clear();
@@ -83,14 +75,21 @@ int main() {
       balle.draw(window);
     }
     // box(x1, x2, y1, y2, window);
+
+    sf::VertexArray lines(sf::Lines);
+
+    for (size_t i = 0; i < balles.size(); ++i) {
+      sf::Vector2f start = balles[i].getPosition();
+      sf::Vector2f end = balles[i].getPosition() + pressureForces[i];
+
+      // Définir les deux sommets de la ligne
+      lines.append(sf::Vertex(start, sf::Color::Red));
+      lines.append(sf::Vertex(end, sf::Color::Blue));
+    }
+
+    window.draw(lines);
     box.draw(window);
 
-    // Draw the circle at balleDensité's position with smoothingRadius
-    sf::CircleShape densityCircle(smoothingRadius);
-    densityCircle.setOrigin(smoothingRadius, smoothingRadius);
-    densityCircle.setPosition(position);
-    densityCircle.setFillColor(sf::Color(0, 0, 255, 100)); // Semi-transparent blue
-    window.draw(densityCircle);
 
       ImGui::SFML::Render(window);
     window.display();

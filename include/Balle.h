@@ -24,7 +24,13 @@ public:
 
   float smoothingKernel(float radius, float dst);
 
+  float smoothingKernelDiravative(float radius, float dst);
+
   float calculateDensity(std::vector<Balle> &balles, float smoothingRadius);
+
+  sf::Vector2f calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle, float smoothingRadius, float mass, float targetDensity, float pressureMultiplier);
+
+  float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
 
   // Getter pour la position
   sf::Vector2f getPosition() const;
