@@ -26,16 +26,19 @@ int main() {
 
   // Paramètres pour les balles
   float ballRadius = 25.f;
-  int numParticles = 2000;
+  int numParticles = 1000;
   float dampingRatio = 1.0f;
-  float gravity = 10.f;
+  float gravity = 0.f;
+  float spacing = 5.0f;
+  float smoothingRadius = 50.0f;
 
   // Liste de balles
   std::vector<Balle> balles;
 
   // Initialiser les balles
   // Start(balles, numParticles, ballRadius, spacing);
-  startRandom(balles, numParticles, ballRadius, box);
+  // startRandom(balles, numParticles, ballRadius, box);
+
 
   sf::Clock deltaClock;
   while (window.isOpen()) {
@@ -49,6 +52,8 @@ int main() {
     }
     float delta = deltaClock.restart().asSeconds();
 
+    Start(balles, numParticles, ballRadius, spacing, box);
+
     // Mettre à jour toutes les balles
     for (auto &balle : balles) {
 
@@ -60,16 +65,17 @@ int main() {
 
     }
 
+    Balle balleDensité = balles[510];
+    sf::Vector2f position = balleDensité.getPosition();
+
+    float densité = balleDensité.calculateDensity(balles, smoothingRadius);
+
       ImGui::SFML::Update(window, deltaClock.restart());
 
     ImGui::Begin("Simulation Settings");
-    ImGui::SliderFloat("Gravity", &gravity, 0.0f, 20.0f);
-    ImGui::SliderFloat("Damping Ratio", &dampingRatio, 0.0f, 1.0f);
-    if (ImGui::SliderFloat("Ball Radius", &ballRadius, 5.0f, 50.0f)) {
-      for (auto &balle : balles) {
-        balle.setRadius(ballRadius);
-      }
-    }
+    ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 25.0f, 500.0f);
+    ImGui::SliderFloat("Spacing", &spacing, 5.0f, 50.0f);
+    ImGui::Text("Density: %.6f", densité);
     ImGui::End();
 
     window.clear();
@@ -78,6 +84,14 @@ int main() {
     }
     // box(x1, x2, y1, y2, window);
     box.draw(window);
+
+    // Draw the circle at balleDensité's position with smoothingRadius
+    sf::CircleShape densityCircle(smoothingRadius);
+    densityCircle.setOrigin(smoothingRadius, smoothingRadius);
+    densityCircle.setPosition(position);
+    densityCircle.setFillColor(sf::Color(0, 0, 255, 100)); // Semi-transparent blue
+    window.draw(densityCircle);
+
       ImGui::SFML::Render(window);
     window.display();
   }
