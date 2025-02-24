@@ -32,6 +32,7 @@ public:
 
   float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
 
+
   // Getter pour la position
   sf::Vector2f getPosition() const;
 

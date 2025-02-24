@@ -45,7 +45,7 @@ void Balle::updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b) {
 
     // Définir une plage de vitesse minimale et maximale
     float minSpeed = 0.f;   // Couleur associée à une vitesse faible
-    float maxSpeed = 500.f; // Couleur associée à une vitesse élevée
+    float maxSpeed = 600.f; // Couleur associée à une vitesse élevée
 
     // Clamp la vitesse
     if (speed < minSpeed) speed = minSpeed;
@@ -102,16 +102,17 @@ void Balle::updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b) {
 }
 
 float Balle::smoothingKernel(float radius, float dst) {
-    float volume = 3.14159265359f * pow(radius, 8) / 4;
-    float value = std::max(0.0f, radius*radius - dst*dst);
-    return value*value*value / volume;
+    if (dst >= radius) {return 0;}
+
+    float volume = (3.14159265359f * pow(radius, 4)) / 6;
+    return (radius - dst) * (radius - dst) / volume;
 }
 
 float Balle::smoothingKernelDiravative(float radius, float dst) {
     if (dst >= radius) {return 0;}
-    float f = radius * radius * - dst * dst;
-    float scale = -24.0f / (3.14159265359f * pow(radius, 8));
-    return scale * dst * f * f;
+
+    float scale = 12.0f / (3.14159265359f * pow(radius, 4));
+    return (dst - radius) * scale;
 }
 
 float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius) {
@@ -134,6 +135,12 @@ sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int parti
     for (int otherParticleIndex = 0; otherParticleIndex < numParticle; otherParticleIndex++) {
         if (otherParticleIndex == particleIndex) {continue;}
         sf::Vector2f dst = (balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition());
+        if (dst.x == 0 && dst.y == 0) {
+            sf::Vector2f pos = balles[particleIndex].getPosition();
+            pos += sf::Vector2f(0.001f, 0.001f); // Move the particle slightly
+            balles[particleIndex].setPosition(pos);
+            dst = (balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition());
+        }
         float dstsqrt = sqrt(dst.x*dst.x + dst.y*dst.y);
         sf::Vector2f dir = dst/dstsqrt;
         float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
@@ -148,6 +155,7 @@ float Balle::convertDensityToPressure(float density, float targetDensity, float 
     float pressure = pressureMultiplier * densityError;
     return pressure;
 }
+
 
 void Balle::setRadius(float radius) {
     shape.setRadius(radius);
