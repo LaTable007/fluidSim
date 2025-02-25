@@ -6,9 +6,11 @@
 class Balle {
 private:
   sf::CircleShape shape; // Forme graphique de la balle
-  sf::Vector2f velocity; // Vitesse de la balle
+  sf::Vector2f velocity;
+  sf::Vector2f predPosition;
   float radius;
   sf::Vector2f position;
+  float density;
 
 public:
   // Constructeur
@@ -32,11 +34,21 @@ public:
 
   float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
 
+  // Méthode pour mettre à jour la densité
+  void updateDensity(const std::vector<Balle>& balles, float smoothingRadius, int index, float mass);
+  // Getter pour la densité
+  float getDensity() const { return density; }
+
+  float calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier);
+
 
   // Getter pour la position
   sf::Vector2f getPosition() const;
 
   sf::Vector2f getVelocity() const; // Nouvelle méthode
+
+  sf::Vector2f getPredPosition() const;
+
 
   void setVelocity(sf::Vector2f vel);
   void setPosition(sf::Vector2f pos);
@@ -45,6 +57,8 @@ public:
   float getRadius() const;
 
   void setRadius(float radius);
+
+  void setPredPosition(sf::Vector2f pos);
 };
 
 #endif

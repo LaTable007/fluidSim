@@ -45,7 +45,7 @@ void Balle::updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b) {
 
     // Définir une plage de vitesse minimale et maximale
     float minSpeed = 0.f;   // Couleur associée à une vitesse faible
-    float maxSpeed = 600.f; // Couleur associée à une vitesse élevée
+    float maxSpeed = 200.f; // Couleur associée à une vitesse élevée
 
     // Clamp la vitesse
     if (speed < minSpeed) speed = minSpeed;
@@ -123,37 +123,61 @@ float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius)
         sf::Vector2f samplePoint = balle.getPosition();
         sf::Vector2f dst = (position - samplePoint);
         float dstsqrt = sqrt(dst.x*dst.x + dst.y*dst.y);
+        if (dstsqrt >= smoothingRadius) {continue;}
         float influence = smoothingKernel(smoothingRadius, dstsqrt);
         density += mass * influence;
     }
     return density;
 }
 
-sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle, float smoothingRadius, float mass, float targetDensity, float pressureMultiplier) {
-
-    sf::Vector2f pressureForce = sf::Vector2f(0.0f, 0.0f);
+sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle,
+                                             float smoothingRadius, float mass, float targetDensity, float pressureMultiplier) {
+    sf::Vector2f pressureForce(0.0f, 0.0f);
+    // Utilisez la densité mise à jour de la balle actuelle
+    float currentDensity = this->density;
     for (int otherParticleIndex = 0; otherParticleIndex < numParticle; otherParticleIndex++) {
-        if (otherParticleIndex == particleIndex) {continue;}
-        sf::Vector2f dst = (balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition());
+        if (otherParticleIndex == particleIndex)
+            continue;
+        sf::Vector2f dst = balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition();
         if (dst.x == 0 && dst.y == 0) {
             sf::Vector2f pos = balles[particleIndex].getPosition();
-            pos += sf::Vector2f(0.001f, 0.001f); // Move the particle slightly
+            pos += sf::Vector2f(0.001f, 0.001f); // Décalage léger pour éviter la division par zéro
             balles[particleIndex].setPosition(pos);
-            dst = (balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition());
+            dst = balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition();
         }
-        float dstsqrt = sqrt(dst.x*dst.x + dst.y*dst.y);
-        sf::Vector2f dir = dst/dstsqrt;
+        float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
+        sf::Vector2f dir = dst / dstsqrt;
         float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
-        float density = calculateDensity(balles, smoothingRadius);
-        pressureForce += -convertDensityToPressure(density, targetDensity, pressureMultiplier) * dir * slope * mass / density;
+
+        float sharedPressure = calculateSharedPressure(balles[particleIndex].getDensity(), balles[otherParticleIndex].getDensity(), targetDensity, pressureMultiplier);
+        // Utiliser la densité mise en cache au lieu de recalculer
+        pressureForce += sharedPressure * dir * slope * mass / currentDensity;
     }
     return pressureForce;
 }
 
+
 float Balle::convertDensityToPressure(float density, float targetDensity, float pressureMultiplier) {
-    float densityError = density - targetDensity;
+    float densityError = targetDensity - density;
     float pressure = pressureMultiplier * densityError;
     return pressure;
+}
+
+void Balle::updateDensity(const std::vector<Balle>& balles, float smoothingRadius, int index, float mass) {
+    float densitySum = 0.0f;
+    sf::Vector2f pos = balles[index].getPredPosition();
+    for (const auto &balle : balles) {
+        sf::Vector2f diff = pos - balle.getPredPosition();
+        float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+        densitySum += mass * smoothingKernel(smoothingRadius, dist);
+    }
+    density = densitySum;
+}
+
+float Balle::calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier) {
+    float pressureA = convertDensityToPressure(densityA, targetDensity, pressureMultiplier);
+    float pressureB = convertDensityToPressure(densityB, targetDensity, pressureMultiplier);
+    return (pressureA + pressureB) / 2;
 }
 
 
@@ -166,8 +190,12 @@ sf::Vector2f Balle::getPosition() const { return shape.getPosition(); }
 
 sf::Vector2f Balle::getVelocity() const { return velocity; }
 
+sf::Vector2f Balle::getPredPosition() const { return predPosition; }
+
 void Balle::setVelocity(sf::Vector2f vel) { velocity = vel; }
 
 void Balle::setPosition(sf::Vector2f pos) { shape.setPosition(pos); }
+
+void Balle::setPredPosition(sf::Vector2f pos) { predPosition = pos; }
 // Ajout de la méthode getRadius
 float Balle::getRadius() const { return shape.getRadius(); }

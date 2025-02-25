@@ -11,7 +11,6 @@
 int main() {
     sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(fullscreenMode, "ImGui + SFML = <3", sf::Style::Fullscreen);
-    window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
     ImGui::GetIO().FontGlobalScale = 2.0f;
 
@@ -20,14 +19,14 @@ int main() {
 
     // Paramètres pour les balles
     float ballRadius = 50.f;
-    int numParticles = 100;
-    float dampingRatio = 0.8f;
+    int numParticles = 500;
+    float dampingRatio = 1.0f;
     float spacing = 5.0f;
-    float smoothingRadius = 500.0f;
+    float smoothingRadius = 250.0f;
     float targetDensity = 1.0f;
-    float pressureMultiplier = 10000.0f;
-    float mass = 0.001f;
-    sf::Vector2f gravity = sf::Vector2f(0.f, 9.8f);
+    float pressureMultiplier = 0.1f;
+    float mass = 1.0f;
+    sf::Vector2f gravity = sf::Vector2f(0.f, 0.0f);
 
     // Variables de contrôle ImGui
     bool showCircle = false;
@@ -37,7 +36,7 @@ int main() {
     // Liste de balles
     std::vector<Balle> balles;
     std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
-    Start(balles, numParticles, ballRadius, spacing, box);
+    startRandom(balles, numParticles, ballRadius, box);
 
     sf::Clock deltaClock;
     while (window.isOpen()) {
@@ -55,12 +54,20 @@ int main() {
 
         // Mise à jour de la simulation seulement si elle n'est pas en pause
         if (!paused) {
+            // Mise à jour des densités pour toutes les balles
+            for (int index = 0; index < numParticles; index++) {
+                sf::Vector2f vel =  balles[index].getVelocity() + gravity * dt;
+                sf::Vector2f predictedPos = balles[index].getPosition() + vel * 1.0f / 120.f;
+                balles[index].setPredPosition(predictedPos);
+                balles[index].updateDensity(balles, smoothingRadius, index, mass);
+                balles[index].setVelocity(vel);
+            }
+
             for (int index = 0; index < numParticles; index++) {
                 pressureForces[index] = balles[index].calculatePressureForce(
                     balles, index, numParticles, smoothingRadius, mass, targetDensity, pressureMultiplier);
-                sf::Vector2f pressureAcceleration = pressureForces[index] / mass;
-                sf::Vector2f vel = balles[index].getVelocity() + pressureAcceleration * dt;
-                //vel += gravity * dt;
+                sf::Vector2f pressureAcceleration = pressureForces[index] / balles[index].getDensity();
+                sf::Vector2f vel  =  balles[index].getVelocity() + pressureAcceleration * dt;
                 balles[index].setVelocity(vel);
                 balles[index].update(dt);
                 box.checkCollision(balles[index], dampingRatio);
@@ -85,10 +92,13 @@ int main() {
             sf::Vector2f vel = balles[selectedParticle].getVelocity();
             ImGui::Text("Position: (%.2f, %.2f)", pos.x, pos.y);
             ImGui::Text("Vitesse: (%.2f, %.2f)", vel.x, vel.y);
+            ImGui::Text("Densité: %.8f", balles[selectedParticle].getDensity());
         }
-        ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 1.0f, 1000000.0f);
-        ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 5000.0f);
-        ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 10.0f);
+        ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 0.1f, 20.0f);
+        ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 500.0f);
+        ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
+        ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 100.0f);
+        ImGui::SliderFloat("Mass", &mass, 0.01f, 10.0f);
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
             ImGui::Text("Simulation en pause");
@@ -102,15 +112,6 @@ int main() {
         for (auto &balle : balles)
             balle.draw(window);
 
-        // Dessiner les forces de pression
-        sf::VertexArray lines(sf::Lines);
-        for (size_t i = 0; i < balles.size(); ++i) {
-            sf::Vector2f start = balles[i].getPosition();
-            sf::Vector2f end = balles[i].getPosition() + pressureForces[i];
-            lines.append(sf::Vertex(start, sf::Color::Red));
-            lines.append(sf::Vertex(end, sf::Color::Blue));
-        }
-        window.draw(lines);
         box.draw(window);
 
         // Si "Afficher cercle" est coché, tracer le cercle et le vecteur de vitesse

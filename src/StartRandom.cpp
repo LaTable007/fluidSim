@@ -24,6 +24,6 @@ void startRandom(std::vector<Balle> &balles, int numberParticles,
     float maxy = down - 2 * radius;
     float miny = up + 2 * radius;
     float y = generateRandomFloat(miny, maxy);
-    balles.emplace_back(radius, sf::Vector2f(x, y), sf::Vector2f(generateRandomFloat(0, 400), generateRandomFloat(0, 400)));
+    balles.emplace_back(radius, sf::Vector2f(x, y), sf::Vector2f( 0, 0));
   };
 };
