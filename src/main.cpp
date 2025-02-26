@@ -18,14 +18,14 @@ int main() {
     Box box(x1, x2, y1, y2);
 
     // Paramètres pour les balles
-    float ballRadius = 50.f;
-    int numParticles = 500;
+    float ballRadius = 25.f;
+    int numParticles = 2;
     float dampingRatio = 1.0f;
     float spacing = 5.0f;
     float smoothingRadius = 250.0f;
     float targetDensity = 1.0f;
-    float pressureMultiplier = 0.1f;
-    float mass = 1.0f;
+    float pressureMultiplier = 1.0f;
+    float mass = 0.01f;
     sf::Vector2f gravity = sf::Vector2f(0.f, 0.0f);
 
     // Variables de contrôle ImGui
@@ -36,7 +36,8 @@ int main() {
     // Liste de balles
     std::vector<Balle> balles;
     std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
-    startRandom(balles, numParticles, ballRadius, box);
+    balles.emplace_back(ballRadius, sf::Vector2f(681.5f, 850.0f), sf::Vector2f(100.0f, 0.0f));
+    balles.emplace_back(ballRadius, sf::Vector2f(2044.0f, 850.0f), sf::Vector2f(-100.0f, 0.0f));
 
     sf::Clock deltaClock;
     while (window.isOpen()) {
@@ -56,8 +57,8 @@ int main() {
         if (!paused) {
             // Mise à jour des densités pour toutes les balles
             for (int index = 0; index < numParticles; index++) {
-                sf::Vector2f vel =  balles[index].getVelocity() + gravity * dt;
-                sf::Vector2f predictedPos = balles[index].getPosition() + vel * 1.0f / 120.f;
+                sf::Vector2f vel =  balles[index].getVelocity();
+                sf::Vector2f predictedPos = balles[index].getPosition() + vel * 1.0f / 60.0f;
                 balles[index].setPredPosition(predictedPos);
                 balles[index].updateDensity(balles, smoothingRadius, index, mass);
                 balles[index].setVelocity(vel);
@@ -67,7 +68,8 @@ int main() {
                 pressureForces[index] = balles[index].calculatePressureForce(
                     balles, index, numParticles, smoothingRadius, mass, targetDensity, pressureMultiplier);
                 sf::Vector2f pressureAcceleration = pressureForces[index] / balles[index].getDensity();
-                sf::Vector2f vel  =  balles[index].getVelocity() + pressureAcceleration * dt;
+                sf::Vector2f vel  = balles[index].getVelocity() + pressureAcceleration * dt;
+                vel += gravity * dt;
                 balles[index].setVelocity(vel);
                 balles[index].update(dt);
                 box.checkCollision(balles[index], dampingRatio);
@@ -96,9 +98,9 @@ int main() {
         }
         ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 0.1f, 20.0f);
         ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 500.0f);
-        ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
+        ImGui::SliderFloat("TargetDensity", &targetDensity, 0.01f, 1.0f);
         ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 100.0f);
-        ImGui::SliderFloat("Mass", &mass, 0.01f, 10.0f);
+        ImGui::SliderFloat("Mass", &mass, 0.1f, 0.01f);
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
             ImGui::Text("Simulation en pause");
