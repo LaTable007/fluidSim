@@ -138,12 +138,12 @@ sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int parti
     for (int otherParticleIndex = 0; otherParticleIndex < numParticle; otherParticleIndex++) {
         if (otherParticleIndex == particleIndex)
             continue;
-        sf::Vector2f dst = balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition();
+        sf::Vector2f dst = balles[otherParticleIndex].getPredPosition() - balles[particleIndex].getPredPosition();
         if (dst.x == 0 && dst.y == 0) {
-            sf::Vector2f pos = balles[particleIndex].getPosition();
+            sf::Vector2f pos = balles[particleIndex].getPredPosition();
             pos += sf::Vector2f(0.001f, 0.001f); // Décalage léger pour éviter la division par zéro
-            balles[particleIndex].setPosition(pos);
-            dst = balles[otherParticleIndex].getPosition() - balles[particleIndex].getPosition();
+            balles[particleIndex].setPredPosition(pos);
+            dst = balles[otherParticleIndex].getPredPosition() - balles[particleIndex].getPredPosition();
         }
         float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
         sf::Vector2f dir = dst / dstsqrt;

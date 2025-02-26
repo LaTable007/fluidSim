@@ -18,15 +18,15 @@ int main() {
     Box box(x1, x2, y1, y2);
 
     // Paramètres pour les balles
-    float ballRadius = 50.f;
+    float ballRadius = 25.f;
     int numParticles = 500;
-    float dampingRatio = 1.0f;
+    float dampingRatio = 0.8f;
     float spacing = 5.0f;
-    float smoothingRadius = 250.0f;
+    float smoothingRadius = 75.0f;
     float targetDensity = 1.0f;
-    float pressureMultiplier = 0.1f;
-    float mass = 1.0f;
-    sf::Vector2f gravity = sf::Vector2f(0.f, 0.0f);
+    float pressureMultiplier = 1.0f;
+    float mass = 0.01f;
+    sf::Vector2f gravity = sf::Vector2f(0.f, 100.0f);
 
     // Variables de contrôle ImGui
     bool showCircle = false;
@@ -57,7 +57,7 @@ int main() {
             // Mise à jour des densités pour toutes les balles
             for (int index = 0; index < numParticles; index++) {
                 sf::Vector2f vel =  balles[index].getVelocity() + gravity * dt;
-                sf::Vector2f predictedPos = balles[index].getPosition() + vel * 1.0f / 120.f;
+                sf::Vector2f predictedPos = balles[index].getPosition() + vel * dt;
                 balles[index].setPredPosition(predictedPos);
                 balles[index].updateDensity(balles, smoothingRadius, index, mass);
                 balles[index].setVelocity(vel);
@@ -98,7 +98,7 @@ int main() {
         ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 500.0f);
         ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
         ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 100.0f);
-        ImGui::SliderFloat("Mass", &mass, 0.01f, 10.0f);
+        ImGui::SliderFloat("Mass", &mass, 0.01f, 0.1f);
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
             ImGui::Text("Simulation en pause");
