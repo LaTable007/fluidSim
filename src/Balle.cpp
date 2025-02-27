@@ -130,29 +130,49 @@ float Balle::calculateDensity(std::vector<Balle> &balles, float smoothingRadius)
     return density;
 }
 
-sf::Vector2f Balle::calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle,
-                                             float smoothingRadius, float mass, float targetDensity, float pressureMultiplier) {
+sf::Vector2f Balle::calculatePressureForce(
+    const std::vector<Balle>& balles,
+    int particleIndex,
+    float smoothingRadius,
+    float mass,
+    float targetDensity,
+    float pressureMultiplier,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles
+) {
     sf::Vector2f pressureForce(0.0f, 0.0f);
-    // Utilisez la densité mise à jour de la balle actuelle
-    float currentDensity = this->density;
-    for (int otherParticleIndex = 0; otherParticleIndex < numParticle; otherParticleIndex++) {
-        if (otherParticleIndex == particleIndex)
-            continue;
-        sf::Vector2f dst = balles[otherParticleIndex].getPredPosition() - balles[particleIndex].getPredPosition();
-        if (dst.x == 0 && dst.y == 0) {
-            sf::Vector2f pos = balles[particleIndex].getPredPosition();
-            pos += sf::Vector2f(0.001f, 0.001f); // Décalage léger pour éviter la division par zéro
-            balles[particleIndex].setPredPosition(pos);
-            dst = balles[otherParticleIndex].getPredPosition() - balles[particleIndex].getPredPosition();
-        }
-        float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
-        sf::Vector2f dir = dst / dstsqrt;
-        float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
+    sf::Vector2f pos = getPredPosition();
 
-        float sharedPressure = calculateSharedPressure(balles[particleIndex].getDensity(), balles[otherParticleIndex].getDensity(), targetDensity, pressureMultiplier);
-        // Utiliser la densité mise en cache au lieu de recalculer
-        pressureForce += sharedPressure * dir * slope * mass / currentDensity;
-    }
+    foreachPointInRadius(
+        pos,                // Point central
+        smoothingRadius,    // Rayon de recherche
+        balles,             // Vecteur des particules
+        spatialLookup,      // Structure spatiale
+        startIndices,       // Indices de départ
+        numParticles,       // Nombre total de particules
+        [&](int neighborIdx) { // Callback
+            if (particleIndex != neighborIdx) {
+                sf::Vector2f dst = balles[neighborIdx].getPredPosition() - pos;
+                float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
+
+                if (dstsqrt > 0) {
+                    sf::Vector2f dir = dst / dstsqrt;
+                    float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
+
+                    float sharedPressure = calculateSharedPressure(
+                        density,
+                        balles[neighborIdx].getDensity(),
+                        targetDensity,
+                        pressureMultiplier
+                    );
+
+                    pressureForce += sharedPressure * dir * slope * mass / density;
+                }
+            }
+        }
+    );
+
     return pressureForce;
 }
 
@@ -163,15 +183,31 @@ float Balle::convertDensityToPressure(float density, float targetDensity, float 
     return pressure;
 }
 
-void Balle::updateDensity(const std::vector<Balle> &balles, float smoothingRadius, int index, float mass) {
-    float densitySum = 0.0f;
-    sf::Vector2f pos = balles[index].getPredPosition();
-    for (const auto &balle : balles) {
-        sf::Vector2f diff = pos - balle.getPredPosition();
-        float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
-        densitySum += mass * smoothingKernel(smoothingRadius, dist);
-    }
-    density = densitySum;
+void Balle::updateDensity(
+    const std::vector<Balle>& balles,
+    float smoothingRadius,
+    int index,
+    float mass,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles
+) {
+    density = 0.0f;
+    sf::Vector2f pos = getPredPosition();
+
+    foreachPointInRadius(
+        pos,
+        smoothingRadius,
+        balles,
+        spatialLookup,
+        startIndices,
+        numParticles,
+        [&](int neighborIdx) {
+            sf::Vector2f diff = pos - balles[neighborIdx].getPredPosition();
+            float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+            density += mass * smoothingKernel(smoothingRadius, dist);
+        }
+    );
 }
 
 
@@ -239,13 +275,51 @@ unsigned int getKeyFromHash(unsigned int hash, int numParticle) {
     return hash % numParticle;
 }
 
-void foreachPointWithinRadius(sf::Vector2f point, float radius) {
-    std::pair<int, int> cell = positionToCellCoord(point, radius);
-    int cellX = cell.first;
-    int cellY = cell.second;
-    float sqrtRadius = radius * radius;
+void foreachPointInRadius(
+    sf::Vector2f samplePoint,
+    float radius,
+    const std::vector<Balle>& balles,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles,
+    std::function<void(int)> callback)
+{
+    const auto [centreX, centreY] = positionToCellCoord(samplePoint, radius);
+    const float sqrRadius = radius * radius;
 
+    const std::vector<std::pair<int, int>> cellOffsets = {
+        {-1, -1}, {0, -1}, {1, -1},
+        {-1,  0}, {0,  0}, {1,  0},
+        {-1,  1}, {0,  1}, {1,  1}
+    };
+    for(const auto& [dx, dy] : cellOffsets) {
+        const int cellX = centreX + dx;
+        const int cellY = centreY + dy;
 
+        // Calcul de la clé de la cellule
+        const unsigned int h = hashCell(cellX, cellY);
+        const unsigned int key = getKeyFromHash(h, numParticles);
+
+        // Vérification des limites
+        if(key >= startIndices.size()) continue;
+        const unsigned int startIdx = startIndices[key];
+        if(startIdx == INT_MAX) continue;
+
+        // Parcours des particules dans la cellule
+        for(size_t i = startIdx; i < spatialLookup.size(); ++i) {
+            if(spatialLookup[i].second != key) break;
+
+            const int particleIdx = spatialLookup[i].first;
+            const auto& pos = balles[particleIdx].getPosition();
+            const float sqrDst =
+                (pos.x - samplePoint.x) * (pos.x - samplePoint.x) +
+                (pos.y - samplePoint.y) * (pos.y - samplePoint.y);
+
+            if(sqrDst <= sqrRadius) {
+                callback(particleIdx);
+            }
+        }
+    }
 }
 
 // Récupérer la position

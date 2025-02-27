@@ -30,12 +30,30 @@ public:
 
   float calculateDensity(std::vector<Balle> &balles, float smoothingRadius);
 
-  sf::Vector2f calculatePressureForce(std::vector<Balle> &balles, int particleIndex, int numParticle, float smoothingRadius, float mass, float targetDensity, float pressureMultiplier);
+  sf::Vector2f calculatePressureForce(
+    const std::vector<Balle>& balles,
+    int particleIndex,
+    float smoothingRadius,
+    float mass,
+    float targetDensity,
+    float pressureMultiplier,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles
+);
 
   float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
 
   // Méthode pour mettre à jour la densité
-  void updateDensity(const std::vector<Balle>& balles, float smoothingRadius, int index, float mass);
+    void updateDensity(
+      const std::vector<Balle>& balles,
+      float smoothingRadius,
+      int index,
+      float mass,
+      const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+      const std::vector<unsigned int>& startIndices,
+      int numParticles
+  );
   // Getter pour la densité
   float getDensity() const { return density; }
 
@@ -70,6 +88,13 @@ unsigned int hashCell(int cellX, int cellY);
 
 unsigned int getKeyFromHash(unsigned int hash, int numParticle);
 
-void foreachPointWithinRadius(sf::Vector2f point, float radius);
+void foreachPointInRadius(
+    sf::Vector2f samplePoint,
+    float radius,
+    const std::vector<Balle>& balles,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles,
+    std::function<void(int)> callback);
 
 #endif

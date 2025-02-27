@@ -40,12 +40,12 @@ int main() {
 
     // Paramètres pour les balles
     float ballRadius = 50.f;
-    int numParticles = 10;
+    int numParticles = 1;
     float dampingRatio = 0.8f;
     float spacing = 5.0f;
-    float smoothingRadius = 75.0f;
+    float smoothingRadius = 50.0f;
     float targetDensity = 1.0f;
-    float pressureMultiplier = 1.0f;
+    float pressureMultiplier = 2.0f;
     float mass = 0.01f;
     float mouseRadius = 200.0f;
     sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
@@ -56,13 +56,17 @@ int main() {
     // Variables de contrôle ImGui
     bool showCircle = false;
     int selectedParticle = 0;
+    bool paused = false; // Variable pour gérer la pause de la simulation
+
 
     // Liste de balles
     std::vector<Balle> balles;
     std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
-    startRandom(balles, numParticles, ballRadius, box);
+    Start(balles, numParticles, ballRadius, spacing, box);
 
     sf::Clock deltaClock;
+
+    const float mouseForce = 2500.0f;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -77,7 +81,44 @@ int main() {
     float dt = delta.asSeconds();
     float fps = 1.0f / dt;
 
+        // Récupérer la position de la souris (en coordonnées du monde)
+        sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePos = window.mapPixelToCoords(mousePixelPos);
+
         updateSpatialLookup(balles, smoothingRadius, numParticles, spatialLookup, startIndices);
+        // Première boucle : mise à jour des positions prédites et densités
+        for (int index = 0; index < numParticles; index++) {
+            sf::Vector2f vel = balles[index].getVelocity() + gravity * dt;
+            sf::Vector2f predictedPos = balles[index].getPosition() + vel * dt;
+            balles[index].setPredPosition(predictedPos);
+            balles[index].updateDensity(balles, smoothingRadius, index, mass, spatialLookup, startIndices, numParticles);
+            balles[index].setVelocity(vel);
+        }
+
+        // Deuxième boucle : calcul des forces de pression et mise à jour
+        for (int index = 0; index < numParticles; index++) {
+            pressureForces[index] = balles[index].calculatePressureForce(balles, index, smoothingRadius, mass, targetDensity, pressureMultiplier, spatialLookup, startIndices, numParticles);
+            sf::Vector2f pressureAcceleration = pressureForces[index] / balles[index].getDensity();
+            sf::Vector2f vel  = balles[index].getVelocity() + pressureAcceleration * dt;
+            balles[index].setVelocity(vel);
+            balles[index].update(dt);
+            box.checkCollision(balles[index], dampingRatio);
+        }
+
+        // Application de la force de la souris (attraction ou répulsion)
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) || sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+            for (auto &balle : balles) {
+                sf::Vector2f pos = balle.getPosition();
+                sf::Vector2f diff = mousePos - pos;
+                float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                if (distance < mouseRadius && distance > 0.0f) { // éviter division par zéro
+                    sf::Vector2f direction = diff / distance; // vecteur unitaire de la balle vers la souris
+                    if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+                        direction = -direction; // inverser pour repousser
+                    balle.setVelocity(balle.getVelocity() + direction * mouseForce * dt);
+                }
+            }
+        }
 
      // Mise à jour d'ImGui
     ImGui::SFML::Update(window, delta);
@@ -86,99 +127,38 @@ int main() {
     ImGui::Begin("Simulation Settings");
 
 
-    ImGui::Checkbox("Afficher cercle", &showCircle);
-    if (showCircle)
-        ImGui::SliderInt("Particule sélectionnée", &selectedParticle, 0, numParticles - 1);
-    if (showCircle && selectedParticle >= 0 && selectedParticle < balles.size()) {
-        sf::Vector2f pos = balles[selectedParticle].getPosition();
-        sf::Vector2f vel = balles[selectedParticle].getVelocity();
-        ImGui::Text("Position: (%.2f, %.2f)", pos.x, pos.y);
-        ImGui::Text("Vitesse: (%.2f, %.2f)", vel.x, vel.y);
-        ImGui::Text("Densité: %.8f", balles[selectedParticle].getDensity());
-    }
-    ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 500.0f);
+        // Bouton pause / reprise
+        if (ImGui::Button(paused ? "Resume Simulation" : "Pause Simulation"))
+            paused = !paused;
 
-        // À ajouter dans votre section ImGui, avant ImGui::End();
-
-        if (ImGui::CollapsingHeader("Spatial Lookup Data")) {
-            static int numElements = 10;
-            ImGui::SliderInt("Elements to show", &numElements, 1, 30);
-
-            // Affichage des éléments triés
-            ImGui::Text("Sorted spatialLookup (Index, CellKey):");
-            int count = 0;
-            for (const auto& entry : spatialLookup) {
-                if (count >= numElements) break;
-                ImGui::Text("(%d, %u)", entry.first, entry.second);
-
-                if (count % 5 < 4) // Affiche plusieurs éléments par ligne
-                    ImGui::SameLine();
-
-                count++;
-            }
-
-            ImGui::Separator();
-
-            // Afficher startIndices
-            ImGui::Text("startIndices (Key, Value):");
-            for (int i = 0; i < std::min(numElements, (int)startIndices.size()); i++) {
-                if (startIndices[i] == INT_MAX)
-                    ImGui::Text("(%d, MAX)", i);
-                else
-                    ImGui::Text("(%d, %u)", i, startIndices[i]);
-
-                if (i % 5 < 4) // Affiche plusieurs éléments par ligne
-                    ImGui::SameLine();
-            }
+        ImGui::Checkbox("Afficher cercle", &showCircle);
+        if (showCircle)
+            ImGui::SliderInt("Particule sélectionnée", &selectedParticle, 0, numParticles - 1);
+        if (showCircle && selectedParticle >= 0 && selectedParticle < balles.size()) {
+            sf::Vector2f pos = balles[selectedParticle].getPosition();
+            sf::Vector2f vel = balles[selectedParticle].getVelocity();
+            ImGui::Text("Position: (%.2f, %.2f)", pos.x, pos.y);
+            ImGui::Text("Vitesse: (%.2f, %.2f)", vel.x, vel.y);
+            ImGui::Text("Densité: %.8f", balles[selectedParticle].getDensity());
         }
+        ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 0.1f, 20.0f);
+        ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 25.0f, 500.0f);
+        ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
+        ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 1000.0f);
+        ImGui::SliderFloat("Mass", &mass, 0.01f, 0.1f);
+        ImGui::Text("FPS: %.1f", fps);
+        if (paused)
+            ImGui::Text("Simulation en pause");
 
 
-
-
-    ImGui::Text("FPS: %.1f", fps);
 
     ImGui::End();
 
     window.clear();
 
-
-        // Dessiner le quadrillage
-        int gridSizeX = window.getSize().x / smoothingRadius;
-        int gridSizeY = window.getSize().y / smoothingRadius;
-
-        // Dessiner les lignes verticales
-        for (int i = 0; i <= gridSizeX; ++i) {
-            sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(i * smoothingRadius, 0), sf::Color::White),
-                sf::Vertex(sf::Vector2f(i * smoothingRadius, window.getSize().y), sf::Color::White)
-            };
-            window.draw(line, 2, sf::Lines);
-        }
-
-        // Dessiner les lignes horizontales
-        for (int i = 0; i <= gridSizeY; ++i) {
-            sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(0, i * smoothingRadius), sf::Color::White),
-                sf::Vertex(sf::Vector2f(window.getSize().x, i * smoothingRadius), sf::Color::White)
-            };
-            window.draw(line, 2, sf::Lines);
-        }
-
-        // Dessiner les balles
-        for (size_t i = 0; i < balles.size(); ++i) {
-            balles[i].draw(window);
-
-            // Créer un texte avec l'indice de la balle
-            sf::Text indexText;
-            indexText.setFont(font);
-            indexText.setString(std::to_string(i)); // Convertir l'indice en string
-            indexText.setCharacterSize(30); // Taille du texte
-            indexText.setFillColor(sf::Color::Red); // Couleur du texte
-            indexText.setPosition(balles[i].getPosition().x, balles[i].getPosition().y); // Positionner le texte près de la balle
-
-            // Afficher l'indice de la balle
-            window.draw(indexText);
-        }
+    for (auto &balle : balles) {
+        balle.draw(window);
+    }
 
     box.draw(window);
 
@@ -187,38 +167,8 @@ int main() {
 
         // Pour chaque cellule de la grille, calculer et afficher son indice de hash
         // Assurez-vous que la police est bien chargée
-        if (fontLoaded) {
-            // Calculer le nombre de cellules dans chaque direction
-            int gridSizeX = window.getSize().x / smoothingRadius;
-            int gridSizeY = window.getSize().y / smoothingRadius;
 
-            // Pour chaque cellule de la grille
-            for (int y = 0; y < gridSizeY; y++) {
-                for (int x = 0; x < gridSizeX; x++) {
-                    // Calculer les coordonnées du coin supérieur gauche de la cellule
-                    float cellX = x * smoothingRadius;
-                    float cellY = y * smoothingRadius;
 
-                    // Calculer l'indice de hash de cette cellule
-                    unsigned int cellHash = hashCell(x, y);
-                    unsigned int cellKey = getKeyFromHash(cellHash, numParticles);
-
-                    // Créer un texte pour afficher l'indice
-                    sf::Text cellText;
-                    cellText.setFont(font);
-                    cellText.setString(std::to_string(cellKey));
-                    cellText.setCharacterSize(20); // Taille plus petite pour tenir dans la cellule
-                    cellText.setFillColor(sf::Color::Green); // Couleur différente pour distinguer
-
-                    // Positionner le texte dans le coin supérieur gauche de la cellule
-                    // avec un petit décalage pour la lisibilité
-                    cellText.setPosition(cellX + 5, cellY + 5);
-
-                    // Afficher le texte
-                    window.draw(cellText);
-                }
-            }
-        }
     // Si "Afficher cercle" est coché, tracer le cercle et le vecteur de vitesse
     if (showCircle && selectedParticle >= 0 && selectedParticle < balles.size()) {
         // Dessiner le cercle autour de la balle sélectionnée
@@ -240,6 +190,15 @@ int main() {
         velocityLine[1].color = sf::Color::Yellow;
         window.draw(velocityLine);
     }
+
+        // Dessiner le cercle autour de la souris (pour visualiser le rayon d'action)
+        sf::CircleShape mouseCircle(mouseRadius);
+        mouseCircle.setFillColor(sf::Color::Transparent);
+        mouseCircle.setOutlineColor(sf::Color::Cyan);
+        mouseCircle.setOutlineThickness(2);
+        mouseCircle.setOrigin(mouseRadius, mouseRadius);
+        mouseCircle.setPosition(mousePos);
+        window.draw(mouseCircle);
 
     ImGui::SFML::Render(window);
     window.display();
