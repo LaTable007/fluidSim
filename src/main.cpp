@@ -50,7 +50,7 @@ int main() {
     float mouseRadius = 200.0f;
     sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
 
-    std::unordered_map<int, unsigned int> spatialLookup;
+    std::map<int, unsigned int> spatialLookup;
     std::vector<unsigned int> startIndices(numParticles);
 
     // Variables de contrôle ImGui
