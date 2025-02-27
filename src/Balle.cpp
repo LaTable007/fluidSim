@@ -187,22 +187,22 @@ void Balle::setRadius(float radius) {
     shape.setOrigin(radius, radius); // Update origin to keep the ball centered
 }
 
-void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles) {
-    std::vector<unsigned int> spatialLookup(numParticles);
-    std::vector<unsigned int> startIndices(numParticles);
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::vector<unsigned int> &spatialLookup, std::vector<unsigned int> &startIndices) {
+    // Initialiser startIndices avec INT_MAX
+    std::fill(startIndices.begin(), startIndices.end(), INT_MAX);
     for (int i = 0; i<numParticles; i++) {
         std::pair<int, int> cell = positionToCellCoord(balles[i].getPosition(), radius);
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
         spatialLookup[i] = cellKey;
-        startIndices[i] = INT_MAX;
     }
+    // Trier le tableau spatialLookup
     std::sort(spatialLookup.begin(), spatialLookup.end());
-    for (int i = 0; i<numParticles; i++) {
+    // Mettre à jour startIndices
+    for (int i = 0; i < numParticles; i++) {
         unsigned int key = spatialLookup[i];
-        unsigned int keyPrev = spatialLookup[i-1];
-        if (key != keyPrev) {
+        if (i == 0 || key != spatialLookup[i-1]) {
             startIndices[key] = i;
         }
     }
