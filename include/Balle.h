@@ -70,4 +70,6 @@ unsigned int hashCell(int cellX, int cellY);
 
 unsigned int getKeyFromHash(unsigned int hash, int numParticle);
 
+void foreachPointWithinRadius(sf::Vector2f point, float radius);
+
 #endif

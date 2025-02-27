@@ -224,6 +224,15 @@ unsigned int getKeyFromHash(unsigned int hash, int numParticle) {
     return hash % numParticle;
 }
 
+void foreachPointWithinRadius(sf::Vector2f point, float radius) {
+    std::pair<int, int> cell = positionToCellCoord(point, radius);
+    int cellX = cell.first;
+    int cellY = cell.second;
+    float sqrtRadius = radius * radius;
+
+
+}
+
 // Récupérer la position
 sf::Vector2f Balle::getPosition() const { return shape.getPosition(); }
 
