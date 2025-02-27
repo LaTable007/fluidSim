@@ -1,6 +1,6 @@
 #include "../include/Balle.h"
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
 
 // Constructeur
 Balle::Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity)
@@ -187,25 +187,46 @@ void Balle::setRadius(float radius) {
     shape.setOrigin(radius, radius); // Update origin to keep the ball centered
 }
 
-void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::map<int, unsigned int> &spatialLookup, std::vector<unsigned int> &startIndices) {
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles,
+                         std::unordered_map<unsigned int, int> &spatialLookup,
+                         std::vector<unsigned int> &startIndices) {
     // Initialiser startIndices avec INT_MAX
     std::fill(startIndices.begin(), startIndices.end(), INT_MAX);
     spatialLookup.clear();
-    for (int i = 0; i<numParticles; i++) {
+
+    // Remplissage de spatialLookup
+    for (int i = 0; i < numParticles; i++) {
         std::pair<int, int> cell = positionToCellCoord(balles[i].getPosition(), radius);
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
         spatialLookup[i] = cellKey;
     }
-    // Mettre à jour startIndices
-    for (int i = 0; i < numParticles; i++) {
-        unsigned int key = spatialLookup[i];
-        if (i == 0 || key != spatialLookup[i-1]) {
-            startIndices[key] = i;
+
+    // Copier les éléments dans un vecteur pour le tri
+    std::vector<std::pair<unsigned int, int>> sortedEntries(spatialLookup.begin(), spatialLookup.end());
+
+    // Assurer un tri par ordre CROISSANT des cellKey
+    std::sort(sortedEntries.begin(), sortedEntries.end(),
+              [](const auto &a, const auto &b) { return a.second < b.second; });
+
+    // Reconstruire spatialLookup trié
+    spatialLookup.clear();
+    for (size_t i = 0; i < sortedEntries.size(); ++i) {
+        unsigned int index = sortedEntries[i].first;
+        int cellKey = sortedEntries[i].second;
+
+        // Stocker les valeurs triées
+        spatialLookup[index] = cellKey;
+
+        // Enregistrer le premier index de chaque cellKey dans startIndices
+        if (startIndices[cellKey] == INT_MAX) {
+            startIndices[cellKey] = index;
         }
     }
 }
+
+
 
 std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius) {
     int cellX = point.x / radius;

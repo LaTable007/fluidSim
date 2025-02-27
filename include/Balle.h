@@ -62,7 +62,7 @@ public:
   void setPredPosition(sf::Vector2f pos);
 };
 
-void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::map<int, unsigned int> &spatialLookup, std::vector<unsigned int> &startIndices);
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::unordered_map<unsigned int, int> &spatialLookup, std::vector<unsigned int> &startIndices);
 
 std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius);
 
