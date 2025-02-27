@@ -187,26 +187,44 @@ void Balle::setRadius(float radius) {
     shape.setOrigin(radius, radius); // Update origin to keep the ball centered
 }
 
-void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::vector<unsigned int> &spatialLookup, std::vector<unsigned int> &startIndices) {
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles,
+                         std::unordered_map<int, unsigned int> &spatialLookup,
+                         std::vector<unsigned int> &startIndices) {
     // Initialiser startIndices avec INT_MAX
     std::fill(startIndices.begin(), startIndices.end(), INT_MAX);
-    for (int i = 0; i<numParticles; i++) {
+
+    spatialLookup.clear(); // Nettoyer la hashmap
+
+    for (int i = 0; i < numParticles; i++) {
         std::pair<int, int> cell = positionToCellCoord(balles[i].getPosition(), radius);
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
         spatialLookup[i] = cellKey;
     }
-    // Trier le tableau spatialLookup
-    std::sort(spatialLookup.begin(), spatialLookup.end());
-    // Mettre à jour startIndices
-    for (int i = 0; i < numParticles; i++) {
-        unsigned int key = spatialLookup[i];
-        if (i == 0 || key != spatialLookup[i-1]) {
+
+    // Copier la hashmap dans un vecteur pour trier
+    std::vector<std::pair<int, unsigned int>> sortedLookup(spatialLookup.begin(), spatialLookup.end());
+
+    // Trier en fonction de cellKey (deuxième élément de la paire)
+    std::sort(sortedLookup.begin(), sortedLookup.end(),
+              [](const std::pair<int, unsigned int> &a, const std::pair<int, unsigned int> &b) {
+                  return a.second < b.second;
+              });
+
+    // Mettre à jour startIndices avec la nouvelle version triée
+    spatialLookup.clear(); // Nettoyer avant de remplir avec les éléments triés
+    for (int i = 0; i < sortedLookup.size(); i++) {
+        int index = sortedLookup[i].first;
+        unsigned int key = sortedLookup[i].second;
+        spatialLookup[index] = key;
+
+        if (i == 0 || key != sortedLookup[i - 1].second) {
             startIndices[key] = i;
         }
     }
 }
+
 
 std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius) {
     int cellX = point.x / radius;

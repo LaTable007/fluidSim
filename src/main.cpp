@@ -40,7 +40,7 @@ int main() {
 
     // Paramètres pour les balles
     float ballRadius = 50.f;
-    int numParticles = 100;
+    int numParticles = 10;
     float dampingRatio = 0.8f;
     float spacing = 5.0f;
     float smoothingRadius = 75.0f;
@@ -50,7 +50,7 @@ int main() {
     float mouseRadius = 200.0f;
     sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
 
-    std::vector<unsigned int> spatialLookup(numParticles);
+    std::unordered_map<int, unsigned int> spatialLookup;
     std::vector<unsigned int> startIndices(numParticles);
 
     // Variables de contrôle ImGui
@@ -100,35 +100,39 @@ int main() {
 
         // À ajouter dans votre section ImGui, avant ImGui::End();
 
-        // Section pour afficher les vecteurs
         if (ImGui::CollapsingHeader("Spatial Lookup Data")) {
-            // Contrôle du nombre d'éléments à afficher
             static int numElements = 10;
             ImGui::SliderInt("Elements to show", &numElements, 1, 30);
 
             // Afficher spatialLookup
-            ImGui::Text("spatialLookup:");
-            for (int i = 0; i < std::min(numElements, (int)spatialLookup.size()); i++) {
-                ImGui::Text("[%d]: %u", i, spatialLookup[i]);
-                // Affiche plusieurs éléments sur la même ligne si possible
-                if (i % 5 < 4 && i + 1 < std::min(numElements, (int)spatialLookup.size()))
+            ImGui::Text("spatialLookup (Key, Value):");
+            int count = 0;
+            for (const auto &pair : spatialLookup) {
+                if (count >= numElements) break;
+                ImGui::Text("(%d, %u)", pair.first, pair.second);
+
+                if (count % 5 < 4) // Affiche plusieurs éléments par ligne
                     ImGui::SameLine();
+
+                count++;
             }
 
             ImGui::Separator();
 
             // Afficher startIndices
-            ImGui::Text("startIndices:");
+            ImGui::Text("startIndices (Key, Value):");
             for (int i = 0; i < std::min(numElements, (int)startIndices.size()); i++) {
                 if (startIndices[i] == INT_MAX)
-                    ImGui::Text("[%d]: MAX", i);
+                    ImGui::Text("(%d, MAX)", i);
                 else
-                    ImGui::Text("[%d]: %u", i, startIndices[i]);
-                // Affiche plusieurs éléments sur la même ligne si possible
-                if (i % 5 < 4 && i + 1 < std::min(numElements, (int)startIndices.size()))
+                    ImGui::Text("(%d, %u)", i, startIndices[i]);
+
+                if (i % 5 < 4) // Affiche plusieurs éléments par ligne
                     ImGui::SameLine();
             }
         }
+
+
 
     ImGui::Text("FPS: %.1f", fps);
 
