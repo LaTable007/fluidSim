@@ -50,7 +50,7 @@ int main() {
     float mouseRadius = 200.0f;
     sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
 
-    std::unordered_map<unsigned int, int> spatialLookup;
+    std::vector<std::pair<unsigned int, int>> spatialLookup;
     std::vector<unsigned int> startIndices(numParticles);
 
     // Variables de contrôle ImGui
@@ -104,12 +104,12 @@ int main() {
             static int numElements = 10;
             ImGui::SliderInt("Elements to show", &numElements, 1, 30);
 
-            // Afficher spatialLookup
-            ImGui::Text("spatialLookup (Key, Value):");
+            // Affichage des éléments triés
+            ImGui::Text("Sorted spatialLookup (Index, CellKey):");
             int count = 0;
-            for (const auto &pair : spatialLookup) {
+            for (const auto& entry : spatialLookup) {
                 if (count >= numElements) break;
-                ImGui::Text("(%d, %u)", pair.first, pair.second);
+                ImGui::Text("(%d, %u)", entry.first, entry.second);
 
                 if (count % 5 < 4) // Affiche plusieurs éléments par ligne
                     ImGui::SameLine();
@@ -131,6 +131,7 @@ int main() {
                     ImGui::SameLine();
             }
         }
+
 
 
 

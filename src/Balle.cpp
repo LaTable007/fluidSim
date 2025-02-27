@@ -188,43 +188,38 @@ void Balle::setRadius(float radius) {
 }
 
 void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles,
-                         std::unordered_map<unsigned int, int> &spatialLookup,
+                         std::vector<std::pair<unsigned int, int>> &spatialLookup, // Utilisation d'un vecteur de paires
                          std::vector<unsigned int> &startIndices) {
     // Initialiser startIndices avec INT_MAX
     std::fill(startIndices.begin(), startIndices.end(), INT_MAX);
-    spatialLookup.clear();
+    spatialLookup.clear();  // Vider la structure de données précédente
 
-    // Remplissage de spatialLookup
+    // Remplissage de spatialLookup avec des paires (index, cellKey)
     for (int i = 0; i < numParticles; i++) {
         std::pair<int, int> cell = positionToCellCoord(balles[i].getPosition(), radius);
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
-        spatialLookup[i] = cellKey;
+        spatialLookup.push_back(std::make_pair(i, cellKey)); // Ajouter la paire (index, cellKey)
     }
 
-    // Copier les éléments dans un vecteur pour le tri
-    std::vector<std::pair<unsigned int, int>> sortedEntries(spatialLookup.begin(), spatialLookup.end());
-
-    // Assurer un tri par ordre CROISSANT des cellKey
-    std::sort(sortedEntries.begin(), sortedEntries.end(),
+    // Trier spatialLookup par ordre croissant des cellKey
+    std::sort(spatialLookup.begin(), spatialLookup.end(),
               [](const auto &a, const auto &b) { return a.second < b.second; });
 
-    // Reconstruire spatialLookup trié
-    spatialLookup.clear();
-    for (size_t i = 0; i < sortedEntries.size(); ++i) {
-        unsigned int index = sortedEntries[i].first;
-        int cellKey = sortedEntries[i].second;
+    // Réinitialiser startIndices
+    std::fill(startIndices.begin(), startIndices.end(), INT_MAX);
 
-        // Stocker les valeurs triées
-        spatialLookup[index] = cellKey;
-
-        // Enregistrer le premier index de chaque cellKey dans startIndices
-        if (startIndices[cellKey] == INT_MAX) {
-            startIndices[cellKey] = index;
+    // Remplir startIndices en fonction de l'ordre trié
+    for (int i=0; i<numParticles; i++) {
+        unsigned int key = spatialLookup[i].second;
+        unsigned int prevKey = spatialLookup[i-1].second;
+        if (key != prevKey) {
+            startIndices[spatialLookup[i].second] = i;
         }
     }
 }
+
 
 
 
