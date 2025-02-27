@@ -45,7 +45,7 @@ void Balle::updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b) {
 
     // Définir une plage de vitesse minimale et maximale
     float minSpeed = 0.f;   // Couleur associée à une vitesse faible
-    float maxSpeed = 200.f; // Couleur associée à une vitesse élevée
+    float maxSpeed = 500.f; // Couleur associée à une vitesse élevée
 
     // Clamp la vitesse
     if (speed < minSpeed) speed = minSpeed;
@@ -163,7 +163,7 @@ float Balle::convertDensityToPressure(float density, float targetDensity, float 
     return pressure;
 }
 
-void Balle::updateDensity(const std::vector<Balle>& balles, float smoothingRadius, int index, float mass) {
+void Balle::updateDensity(const std::vector<Balle> &balles, float smoothingRadius, int index, float mass) {
     float densitySum = 0.0f;
     sf::Vector2f pos = balles[index].getPredPosition();
     for (const auto &balle : balles) {
@@ -173,6 +173,7 @@ void Balle::updateDensity(const std::vector<Balle>& balles, float smoothingRadiu
     }
     density = densitySum;
 }
+
 
 float Balle::calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier) {
     float pressureA = convertDensityToPressure(densityA, targetDensity, pressureMultiplier);
@@ -185,6 +186,44 @@ void Balle::setRadius(float radius) {
     shape.setRadius(radius);
     shape.setOrigin(radius, radius); // Update origin to keep the ball centered
 }
+
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles) {
+    std::vector<unsigned int> spatialLookup(numParticles);
+    std::vector<unsigned int> startIndices(numParticles);
+    for (int i = 0; i<numParticles; i++) {
+        std::pair<int, int> cell = positionToCellCoord(balles[i].getPosition(), radius);
+        int cellX = cell.first;
+        int cellY = cell.second;
+        unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
+        spatialLookup[i] = cellKey;
+        startIndices[i] = INT_MAX;
+    }
+    std::sort(spatialLookup.begin(), spatialLookup.end());
+    for (int i = 0; i<numParticles; i++) {
+        unsigned int key = spatialLookup[i];
+        unsigned int keyPrev = spatialLookup[i-1];
+        if (key != keyPrev) {
+            startIndices[key] = i;
+        }
+    }
+}
+
+std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius) {
+    int cellX = point.x / radius;
+    int cellY = point.y / radius;
+    return {cellX, cellY};
+}
+
+unsigned int hashCell(int cellX, int cellY) {
+    unsigned int a = cellX * 15823;
+    unsigned int b = cellY * 9737333;
+    return a + b;
+}
+
+unsigned int getKeyFromHash(unsigned int hash, int numParticle) {
+    return hash % numParticle;
+}
+
 // Récupérer la position
 sf::Vector2f Balle::getPosition() const { return shape.getPosition(); }
 

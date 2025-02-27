@@ -42,6 +42,7 @@ public:
   float calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier);
 
 
+
   // Getter pour la position
   sf::Vector2f getPosition() const;
 
@@ -60,5 +61,13 @@ public:
 
   void setPredPosition(sf::Vector2f pos);
 };
+
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles);
+
+std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius);
+
+unsigned int hashCell(int cellX, int cellY);
+
+unsigned int getKeyFromHash(unsigned int hash, int numParticle);
 
 #endif

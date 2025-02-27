@@ -27,7 +27,7 @@ int main() {
     float pressureMultiplier = 1.0f;
     float mass = 0.01f;
     float mouseRadius = 200.0f;
-    sf::Vector2f gravity = sf::Vector2f(0.f, 100.0f);
+    sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
 
     // Variables de contrôle ImGui
     bool showCircle = false;
@@ -37,7 +37,7 @@ int main() {
     // Liste de balles
     std::vector<Balle> balles;
     std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
-    startRandom(balles, numParticles, ballRadius, box);
+    Start(balles, numParticles, ballRadius, spacing, box);
 
     sf::Clock deltaClock;
     // Déclaration d'une force de souris (à ajuster selon l'effet souhaité)
@@ -120,7 +120,7 @@ while (window.isOpen()) {
         ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 0.1f, 20.0f);
         ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 50.0f, 500.0f);
         ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
-        ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 100.0f);
+        ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 1000.0f);
         ImGui::SliderFloat("Mass", &mass, 0.01f, 0.1f);
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
