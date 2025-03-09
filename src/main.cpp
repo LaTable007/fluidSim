@@ -15,40 +15,21 @@ int main() {
     ImGui::SFML::Init(window);
     ImGui::GetIO().FontGlobalScale = 2.0f;
 
-    // Charger une police pour afficher les indices
-    sf::Font font;
-
-    // Spécifiez le chemin vers un fichier de police valide sur votre système
-    bool fontLoaded = font.loadFromFile("../fonts/arial.ttf"); // Modifiez ce chemin selon votre configuration
-    if (!fontLoaded) {
-        std::cerr << "Erreur: Impossible de charger la police" << std::endl;
-        // Fallback: Essayez de charger la police par défaut du système (chemin alternatif)
-        fontLoaded = font.loadFromFile("C:/Windows/Fonts/arial.ttf"); // Windows
-        if (!fontLoaded) {
-            fontLoaded = font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"); // Linux
-            if (!fontLoaded) {
-                fontLoaded = font.loadFromFile("/System/Library/Fonts/Helvetica.ttc"); // macOS
-                if (!fontLoaded) {
-                    std::cerr << "Aucune police de secours n'a pu être chargée. Les indices ne seront pas affichés." << std::endl;
-                }
-            }
-        }
-    }
-
     float x1 = 100, x2 = 2825, y1 = 50, y2 = 1750;
     Box box(x1, x2, y1, y2);
 
     // Paramètres pour les balles
-    float ballRadius = 50.f;
-    int numParticles = 1;
+    float ballRadius = 10.f;
+    int numParticles = 4000;
     float dampingRatio = 0.8f;
     float spacing = 5.0f;
-    float smoothingRadius = 50.0f;
+    float smoothingRadius = 30.0f;
     float targetDensity = 1.0f;
-    float pressureMultiplier = 2.0f;
+    float pressureMultiplier = 1.0f;
     float mass = 0.01f;
     float mouseRadius = 200.0f;
-    sf::Vector2f gravity = sf::Vector2f(0.f, 500.0f);
+    float viscosity = 0.5f;
+    sf::Vector2f gravity = sf::Vector2f(0.f, 0.0f);
 
     std::vector<std::pair<unsigned int, int>> spatialLookup;
     std::vector<unsigned int> startIndices(numParticles);
@@ -62,7 +43,8 @@ int main() {
     // Liste de balles
     std::vector<Balle> balles;
     std::vector<sf::Vector2f> pressureForces(numParticles, sf::Vector2f(0.f, 0.f));
-    Start(balles, numParticles, ballRadius, spacing, box);
+    std::vector<sf::Vector2f> viscosityForces(numParticles, sf::Vector2f(0.f, 0.f));
+    startRandom(balles, numParticles, ballRadius, box);
 
     sf::Clock deltaClock;
 
@@ -98,7 +80,8 @@ int main() {
         // Deuxième boucle : calcul des forces de pression et mise à jour
         for (int index = 0; index < numParticles; index++) {
             pressureForces[index] = balles[index].calculatePressureForce(balles, index, smoothingRadius, mass, targetDensity, pressureMultiplier, spatialLookup, startIndices, numParticles);
-            sf::Vector2f pressureAcceleration = pressureForces[index] / balles[index].getDensity();
+            viscosityForces[index] = balles[index].calculateViscosityForce(balles, index, smoothingRadius, viscosity, spatialLookup, startIndices, numParticles);
+            sf::Vector2f pressureAcceleration = (pressureForces[index] + viscosityForces[index]) / balles[index].getDensity();
             sf::Vector2f vel  = balles[index].getVelocity() + pressureAcceleration * dt;
             balles[index].setVelocity(vel);
             balles[index].update(dt);
@@ -146,6 +129,7 @@ int main() {
         ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
         ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 1000.0f);
         ImGui::SliderFloat("Mass", &mass, 0.01f, 0.1f);
+        ImGui::SliderFloat("viscosity", &viscosity, 0.0f, 1.1f);
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
             ImGui::Text("Simulation en pause");

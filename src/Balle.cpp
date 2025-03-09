@@ -176,6 +176,50 @@ sf::Vector2f Balle::calculatePressureForce(
     return pressureForce;
 }
 
+sf::Vector2f Balle::calculateViscosityForce(
+    const std::vector<Balle>& balles,
+    int particleIndex,
+    float smoothingRadius,
+    float viscosity,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles
+) {
+    sf::Vector2f viscosityForce(0.0f, 0.0f);
+    sf::Vector2f pos = getPredPosition();
+
+    foreachPointInRadius(
+        pos,                // Point central
+        smoothingRadius,    // Rayon de recherche
+        balles,             // Vecteur des particules
+        spatialLookup,      // Structure spatiale
+        startIndices,       // Indices de départ
+        numParticles,       // Nombre total de particules
+        [&](int neighborIdx) { // Callback
+            if (particleIndex != neighborIdx) {
+                sf::Vector2f dst = balles[neighborIdx].getPredPosition() - pos;
+                float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
+
+                if (dstsqrt > 0) {
+                    sf::Vector2f dir = dst / dstsqrt;
+                    float slope = viscositySmoothingKernel(smoothingRadius, dstsqrt);
+
+                    viscosityForce += (balles[neighborIdx].getVelocity() - velocity) * slope;
+                }
+            }
+        }
+    );
+
+    return viscosityForce * viscosity;
+}
+
+float Balle::viscositySmoothingKernel(float smoothingRadius, float dstsqrt) {
+    if (dstsqrt >= radius) {return 0;}
+    float volume = 3.14159265359f * pow(smoothingRadius, 8) / 4;
+    float value = smoothingRadius * smoothingRadius - dstsqrt * dstsqrt;
+    return value * value * value / volume;
+}
+
 
 float Balle::convertDensityToPressure(float density, float targetDensity, float pressureMultiplier) {
     float densityError = targetDensity - density;

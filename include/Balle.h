@@ -42,6 +42,18 @@ public:
     int numParticles
 );
 
+  sf::Vector2f calculateViscosityForce(
+    const std::vector<Balle>& balles,
+    int particleIndex,
+    float smoothingRadius,
+    float viscosity,
+    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+    const std::vector<unsigned int>& startIndices,
+    int numParticles
+);
+
+  float viscositySmoothingKernel(float smoothingRadius, float dstsqrt);
+
   float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
 
   // Méthode pour mettre à jour la densité
