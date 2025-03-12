@@ -280,7 +280,7 @@ void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numPartic
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
-        std::cout << "Ball " << i << " -> Cell (" << cellX << ", " << cellY << "), Key: " << cellKey << std::endl;
+        //std::cout << "Ball " << i << " -> Cell (" << cellX << ", " << cellY << "), Key: " << cellKey << std::endl;
 
         spatialLookup.push_back(std::make_pair(i, cellKey)); // Ajouter la paire (index, cellKey)
     }
