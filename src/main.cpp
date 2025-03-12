@@ -15,21 +15,22 @@ int main() {
     ImGui::SFML::Init(window);
     ImGui::GetIO().FontGlobalScale = 2.0f;
 
+
     float x1 = 100, x2 = 2825, y1 = 50, y2 = 1750;
     Box box(x1, x2, y1, y2);
 
     // Paramètres pour les balles
-    float ballRadius = 10.f;
-    int numParticles = 4000;
+    float ballRadius = 25.f;
+    int numParticles = 2000;
     float dampingRatio = 0.8f;
     float spacing = 5.0f;
-    float smoothingRadius = 30.0f;
+    float smoothingRadius = 50.0f;
     float targetDensity = 1.0f;
     float pressureMultiplier = 1.0f;
     float mass = 0.01f;
-    float mouseRadius = 200.0f;
-    float viscosity = 0.5f;
-    sf::Vector2f gravity = sf::Vector2f(0.f, 0.0f);
+    float mouseRadius = 400.0f;
+    float viscosity = 0.0f;
+    sf::Vector2f gravity = sf::Vector2f(0.f, 125.0f);
 
     std::vector<std::pair<unsigned int, int>> spatialLookup;
     std::vector<unsigned int> startIndices(numParticles);
@@ -38,6 +39,7 @@ int main() {
     bool showCircle = false;
     int selectedParticle = 0;
     bool paused = false; // Variable pour gérer la pause de la simulation
+    bool clic = true; // Variable pour gérer la pause de la souris
 
 
     // Liste de balles
@@ -48,7 +50,7 @@ int main() {
 
     sf::Clock deltaClock;
 
-    const float mouseForce = 2500.0f;
+    const float mouseForce = 1000.0f;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -67,38 +69,43 @@ int main() {
         sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
         sf::Vector2f mousePos = window.mapPixelToCoords(mousePixelPos);
 
-        updateSpatialLookup(balles, smoothingRadius, numParticles, spatialLookup, startIndices);
-        // Première boucle : mise à jour des positions prédites et densités
-        for (int index = 0; index < numParticles; index++) {
-            sf::Vector2f vel = balles[index].getVelocity() + gravity * dt;
-            sf::Vector2f predictedPos = balles[index].getPosition() + vel * dt;
-            balles[index].setPredPosition(predictedPos);
-            balles[index].updateDensity(balles, smoothingRadius, index, mass, spatialLookup, startIndices, numParticles);
-            balles[index].setVelocity(vel);
-        }
+        if (paused == false) {
+            updateSpatialLookup(balles, smoothingRadius, numParticles, spatialLookup, startIndices);
+            // Première boucle : mise à jour des positions prédites et densités
+            for (int index = 0; index < numParticles; index++) {
+                sf::Vector2f vel = balles[index].getVelocity() + gravity * dt;
+                sf::Vector2f predictedPos = balles[index].getPosition() + vel * dt;
+                balles[index].setPredPosition(predictedPos);
+                balles[index].updateDensity(balles, smoothingRadius, index, mass, spatialLookup, startIndices, numParticles);
+                balles[index].setVelocity(vel);
+            }
 
-        // Deuxième boucle : calcul des forces de pression et mise à jour
-        for (int index = 0; index < numParticles; index++) {
-            pressureForces[index] = balles[index].calculatePressureForce(balles, index, smoothingRadius, mass, targetDensity, pressureMultiplier, spatialLookup, startIndices, numParticles);
-            viscosityForces[index] = balles[index].calculateViscosityForce(balles, index, smoothingRadius, viscosity, spatialLookup, startIndices, numParticles);
-            sf::Vector2f pressureAcceleration = (pressureForces[index] + viscosityForces[index]) / balles[index].getDensity();
-            sf::Vector2f vel  = balles[index].getVelocity() + pressureAcceleration * dt;
-            balles[index].setVelocity(vel);
-            balles[index].update(dt);
-            box.checkCollision(balles[index], dampingRatio);
-        }
-
-        // Application de la force de la souris (attraction ou répulsion)
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) || sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-            for (auto &balle : balles) {
-                sf::Vector2f pos = balle.getPosition();
-                sf::Vector2f diff = mousePos - pos;
-                float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
-                if (distance < mouseRadius && distance > 0.0f) { // éviter division par zéro
-                    sf::Vector2f direction = diff / distance; // vecteur unitaire de la balle vers la souris
-                    if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-                        direction = -direction; // inverser pour repousser
-                    balle.setVelocity(balle.getVelocity() + direction * mouseForce * dt);
+            // Deuxième boucle : calcul des forces de pression et mise à jour
+            for (int index = 0; index < numParticles; index++) {
+                pressureForces[index] = balles[index].calculatePressureForce(balles, index, smoothingRadius, mass, targetDensity, pressureMultiplier, spatialLookup, startIndices, numParticles);
+                viscosityForces[index] = balles[index].calculateViscosityForce(balles, index, smoothingRadius, viscosity, spatialLookup, startIndices, numParticles);
+                sf::Vector2f pressureAcceleration = (pressureForces[index] + viscosityForces[index]) / balles[index].getDensity();
+                sf::Vector2f vel  = balles[index].getVelocity() + pressureAcceleration * dt;
+                //std::cout << "Pressure force: " << pressureForces[index].x << ", " << pressureForces[index].y << std::endl;
+                //std::cout << "Viscosity force: " << viscosityForces[index].x << ", " << viscosityForces[index].y << std::endl;
+                balles[index].setVelocity(vel);
+                balles[index].update(dt);
+                box.checkCollision(balles[index], dampingRatio);
+            }
+            if (clic == false) {
+                // Application de la force de la souris (attraction ou répulsion)
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left) || sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+                    for (auto &balle : balles) {
+                        sf::Vector2f pos = balle.getPosition();
+                        sf::Vector2f diff = mousePos - pos;
+                        float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                        if (distance < mouseRadius && distance > 0.0f) { // éviter division par zéro
+                            sf::Vector2f direction = diff / distance; // vecteur unitaire de la balle vers la souris
+                            if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+                                direction = -direction; // inverser pour repousser
+                            balle.setVelocity(balle.getVelocity() + direction * mouseForce * dt);
+                        }
+                    }
                 }
             }
         }
@@ -113,6 +120,8 @@ int main() {
         // Bouton pause / reprise
         if (ImGui::Button(paused ? "Resume Simulation" : "Pause Simulation"))
             paused = !paused;
+        if (ImGui::Button(clic ? "Activer souris" : "Desactiver souris"))
+            clic = !clic;
 
         ImGui::Checkbox("Afficher cercle", &showCircle);
         if (showCircle)
@@ -133,16 +142,15 @@ int main() {
         ImGui::Text("FPS: %.1f", fps);
         if (paused)
             ImGui::Text("Simulation en pause");
-
-
+        if (clic)
+            ImGui::Text("Souris désactivé");
 
     ImGui::End();
 
     window.clear();
 
-    for (auto &balle : balles) {
-        balle.draw(window);
-    }
+        for (auto &balle : balles)
+            balle.draw(window);
 
     box.draw(window);
 
@@ -151,7 +159,6 @@ int main() {
 
         // Pour chaque cellule de la grille, calculer et afficher son indice de hash
         // Assurez-vous que la police est bien chargée
-
 
     // Si "Afficher cercle" est coché, tracer le cercle et le vecteur de vitesse
     if (showCircle && selectedParticle >= 0 && selectedParticle < balles.size()) {
@@ -174,15 +181,6 @@ int main() {
         velocityLine[1].color = sf::Color::Yellow;
         window.draw(velocityLine);
     }
-
-        // Dessiner le cercle autour de la souris (pour visualiser le rayon d'action)
-        sf::CircleShape mouseCircle(mouseRadius);
-        mouseCircle.setFillColor(sf::Color::Transparent);
-        mouseCircle.setOutlineColor(sf::Color::Cyan);
-        mouseCircle.setOutlineThickness(2);
-        mouseCircle.setOrigin(mouseRadius, mouseRadius);
-        mouseCircle.setPosition(mousePos);
-        window.draw(mouseCircle);
 
     ImGui::SFML::Render(window);
     window.display();

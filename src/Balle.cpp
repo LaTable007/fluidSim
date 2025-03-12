@@ -280,6 +280,8 @@ void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numPartic
         int cellX = cell.first;
         int cellY = cell.second;
         unsigned cellKey = getKeyFromHash(hashCell(cellX, cellY), numParticles);
+        std::cout << "Ball " << i << " -> Cell (" << cellX << ", " << cellY << "), Key: " << cellKey << std::endl;
+
         spatialLookup.push_back(std::make_pair(i, cellKey)); // Ajouter la paire (index, cellKey)
     }
 
@@ -292,20 +294,17 @@ void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numPartic
 
     // Remplir startIndices en fonction de l'ordre trié
     for (int i=0; i<numParticles; i++) {
+
         unsigned int key = spatialLookup[i].second;
-        unsigned int prevKey = spatialLookup[i-1].second;
-        if (key != prevKey) {
-            startIndices[spatialLookup[i].second] = i;
+        if (i == 0 || key != spatialLookup[i - 1].second) {
+            startIndices[key] = i;
         }
     }
 }
 
-
-
-
 std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius) {
-    int cellX = point.x / radius;
-    int cellY = point.y / radius;
+    int cellX = static_cast<int>(std::floor((point.x / radius)));
+    int cellY = static_cast<int>(std::floor((point.y / radius)));
     return {cellX, cellY};
 }
 
@@ -316,6 +315,7 @@ unsigned int hashCell(int cellX, int cellY) {
 }
 
 unsigned int getKeyFromHash(unsigned int hash, int numParticle) {
+
     return hash % numParticle;
 }
 
