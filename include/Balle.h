@@ -1,105 +1,86 @@
-#ifndef BALLE_HPP
-#define BALLE_HPP
+#ifndef BALLE_H
+#define BALLE_H
 
 #include <SFML/Graphics.hpp>
+#include <vector>
+#include <functional>
+#include <utility>
 
 class Balle {
-private:
-  sf::CircleShape shape; // Forme graphique de la balle
-  sf::Vector2f velocity;
-  sf::Vector2f predPosition;
-  float radius;
-  sf::Vector2f position;
-  float density;
-
 public:
-  // Constructeur
-  Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity);
+    Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity);
 
-  // Méthode pour mettre à jour la position
-  void update(float dt);
+    void update(float dt);
+    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderWindow &window, const sf::Color &overrideColor);
 
-  // Méthode pour dessiner la balle
-  void draw(sf::RenderWindow &window);
+    void updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b);
 
-  void updateColor(sf::Uint8* r, sf::Uint8* g, sf::Uint8* b);
+    float smoothingKernel(float radius, float dst);
+    float smoothingKernelDiravative(float radius, float dst);
 
-  float smoothingKernel(float radius, float dst);
+    float calculateDensity(std::vector<Balle> &balles, float smoothingRadius);
+    sf::Vector2f calculatePressureForce(
+        const std::vector<Balle>& balles,
+        int particleIndex,
+        float smoothingRadius,
+        float mass,
+        float targetDensity,
+        float pressureMultiplier,
+        const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+        const std::vector<unsigned int>& startIndices,
+        int numParticles
+    );
+    sf::Vector2f calculateViscosityForce(
+        const std::vector<Balle>& balles,
+        int particleIndex,
+        float smoothingRadius,
+        float viscosity,
+        const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+        const std::vector<unsigned int>& startIndices,
+        int numParticles
+    );
 
-  float smoothingKernelDiravative(float radius, float dst);
-
-  float calculateDensity(std::vector<Balle> &balles, float smoothingRadius);
-
-  sf::Vector2f calculatePressureForce(
-    const std::vector<Balle>& balles,
-    int particleIndex,
-    float smoothingRadius,
-    float mass,
-    float targetDensity,
-    float pressureMultiplier,
-    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
-    const std::vector<unsigned int>& startIndices,
-    int numParticles
-);
-
-  sf::Vector2f calculateViscosityForce(
-    const std::vector<Balle>& balles,
-    int particleIndex,
-    float smoothingRadius,
-    float viscosity,
-    const std::vector<std::pair<unsigned int, int>>& spatialLookup,
-    const std::vector<unsigned int>& startIndices,
-    int numParticles
-);
-
-  float viscositySmoothingKernel(float smoothingRadius, float dstsqrt);
-
-  float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
-
-  // Méthode pour mettre à jour la densité
+    float viscositySmoothingKernel(float smoothingRadius, float dstsqrt);
+    float convertDensityToPressure(float density, float targetDensity, float pressureMultiplier);
     void updateDensity(
-      const std::vector<Balle>& balles,
-      float smoothingRadius,
-      int index,
-      float mass,
-      const std::vector<std::pair<unsigned int, int>>& spatialLookup,
-      const std::vector<unsigned int>& startIndices,
-      int numParticles
-  );
-  // Getter pour la densité
-  float getDensity() const { return density; }
+        const std::vector<Balle>& balles,
+        float smoothingRadius,
+        int index,
+        float mass,
+        const std::vector<std::pair<unsigned int, int>>& spatialLookup,
+        const std::vector<unsigned int>& startIndices,
+        int numParticles
+    );
+    float calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier);
 
-  float calculateSharedPressure(float densityA, float densityB, float targetDensity, float pressureMultiplier);
+    void setRadius(float radius);
 
+    sf::Vector2f getPosition() const;
+    sf::Vector2f getVelocity() const;
+    sf::Vector2f getPredPosition() const;
 
+    void setVelocity(sf::Vector2f vel);
+    void setPosition(sf::Vector2f pos);
+    void setPredPosition(sf::Vector2f pos);
 
-  // Getter pour la position
-  sf::Vector2f getPosition() const;
+    float getRadius() const;
+    float getDensity() const;
 
-  sf::Vector2f getVelocity() const; // Nouvelle méthode
-
-  sf::Vector2f getPredPosition() const;
-
-
-  void setVelocity(sf::Vector2f vel);
-  void setPosition(sf::Vector2f pos);
-
-  // Ajouter la méthode getRadius pour obtenir le rayon de la balle
-  float getRadius() const;
-
-  void setRadius(float radius);
-
-  void setPredPosition(sf::Vector2f pos);
+private:
+    sf::CircleShape shape;
+    sf::Vector2f velocity;
+    sf::Vector2f predPosition;
+    float density;
 };
 
-void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles, std::vector<std::pair<unsigned int, int>> &spatialLookup, std::vector<unsigned int> &startIndices);
-
+// Fonctions utilitaires pour la spatialisation
 std::pair<int, int> positionToCellCoord(sf::Vector2f point, float radius);
-
 unsigned int hashCell(int cellX, int cellY);
-
 unsigned int getKeyFromHash(unsigned int hash, int numParticle);
-
+void updateSpatialLookup(std::vector<Balle> &balles, float radius, int numParticles,
+    std::vector<std::pair<unsigned int, int>> &spatialLookup,
+    std::vector<unsigned int> &startIndices);
 void foreachPointInRadius(
     sf::Vector2f samplePoint,
     float radius,
@@ -107,6 +88,8 @@ void foreachPointInRadius(
     const std::vector<std::pair<unsigned int, int>>& spatialLookup,
     const std::vector<unsigned int>& startIndices,
     int numParticles,
-    std::function<void(int)> callback);
+    std::function<void(int)> callback,
+    std::vector<int>& affectedBalles
+);
 
-#endif
+#endif // BALLE_H
