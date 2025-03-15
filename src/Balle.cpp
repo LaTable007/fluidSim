@@ -139,6 +139,7 @@ sf::Vector2f Balle::calculatePressureForce(
             if (particleIndex != neighborIdx) {
                 sf::Vector2f dst = balles[neighborIdx].getPredPosition() - pos;
                 float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
+                dstsqrt = std::max(dstsqrt, 1.0f);
                 if (dstsqrt > 0) {
                     sf::Vector2f dir = dst / dstsqrt;
                     float slope = smoothingKernelDiravative(smoothingRadius, dstsqrt);
@@ -180,6 +181,7 @@ sf::Vector2f Balle::calculateViscosityForce(
             if (particleIndex != neighborIdx) {
                 sf::Vector2f dst = balles[neighborIdx].getPredPosition() - pos;
                 float dstsqrt = std::sqrt(dst.x * dst.x + dst.y * dst.y);
+                dstsqrt = std::max(dstsqrt, 1.0f);
                 if (dstsqrt > 0) {
                     sf::Vector2f dir = dst / dstsqrt;
                     float slope = viscositySmoothingKernel(smoothingRadius, dstsqrt);

@@ -21,14 +21,14 @@ int main() {
 
     // Paramètres pour les balles
     float ballRadius = 25.f;
-    int numParticles = 1000;
+    int numParticles = 2000;
     float dampingRatio = 0.8f;
     float spacing = 5.0f;
     float smoothingRadius = 50.0f;
     float targetDensity = 1.0f;
     float pressureMultiplier = 1.0f;
     float mass = 0.01f;
-    float mouseRadius = 400.0f;
+    float mouseRadius =400.0f;
     float viscosity = 0.7f;
     sf::Vector2f gravity(0.f, 0.0f);
 
