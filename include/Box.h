@@ -13,6 +13,7 @@ public:
     void draw(sf::RenderWindow &window);
     void checkCollision(Balle &ball, float dampingRatio);
     void getBounds(float* outX1, float* outX2, float* outY1, float* outY2) const;
+    void checkCollisionPredPosition(Balle &balle);
 
 };
 

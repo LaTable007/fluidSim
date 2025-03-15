@@ -50,6 +50,26 @@ void Box::checkCollision(Balle &balle, float dampingRatio) {
     balle.setPosition(pos);
 }
 
+void Box::checkCollisionPredPosition(Balle &balle) {
+    // Récupérer la position et le rayon de la balle
+    sf::Vector2f pos = balle.getPredPosition();
+    float ballRadius = balle.getRadius();
+
+    if (pos.x - ballRadius <= x1) {
+        pos.x = x1 + ballRadius;
+    }
+    if (pos.x + ballRadius >= x2) {
+        pos.x = x2 - ballRadius;
+    }
+    if (pos.y - ballRadius <= y1) {
+        pos.y = y1 + ballRadius;
+    }
+    if (pos.y + ballRadius >= y2) {
+        pos.y = y2 - ballRadius;
+    }
+    balle.setPredPosition(pos);
+}
+
 void Box::getBounds(float* outX1, float* outX2, float* outY1, float* outY2) const {
     if (outX1) *outX1 = x1;
     if (outX2) *outX2 = x2;
