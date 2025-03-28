@@ -10,18 +10,29 @@ git clone le repo
 
 Build en version Release:
 
-`cmake --build build --config Release`
+```bash 
+cmake --build build --config Release
+```
 
 Build en version Debug:
 
-`cmake --build build --config Debug`
+```bash 
+cmake --build build --config Debug
+```
+
 
 ## Run
 
 Release
 
-`./build/src/Release/SimulationDeFluide`
+```bash 
+./build/src/Release/SimulationDeFluide
+```
+
 
 Debug
 
-`./build/src/Debug/SimulationDeFluide`
+```bash 
+./build/src/Debug/SimulationDeFluide
+```
+
