@@ -8,31 +8,34 @@ git clone le repo
 
 ## Build
 
+Build utilise Ninja
+
+```bash
+cmake -S . -B build -G "Ninja Multi-Config"
+```
+
 Build en version Release:
 
-```bash 
+```bash
 cmake --build build --config Release
 ```
 
 Build en version Debug:
 
-```bash 
+```bash
 cmake --build build --config Debug
 ```
-
 
 ## Run
 
 Release
 
-```bash 
+```bash
 ./build/src/Release/SimulationDeFluide
 ```
 
-
 Debug
 
-```bash 
+```bash
 ./build/src/Debug/SimulationDeFluide
 ```
-
