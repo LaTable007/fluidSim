@@ -12,7 +12,7 @@ git clone https://github.com/LaTable007/fluidSim.git
 
 ## Build
 
-On build avec Ninja afin d'avoir une exécutable en Release mode et une en debug mode. 
+On build avec Ninja afin d'avoir une exécutable en Release mode et une en Debug mode. 
 
 ```bash
 cmake -s . -b build -g "ninja multi-config"
