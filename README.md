@@ -7,7 +7,7 @@ Projet qui simule la mécanique des fluides de manières euleriennes.
 Clone le repo
 
 ```bash
-https://github.com/LaTable007/fluidSim.git
+git clone https://github.com/LaTable007/fluidSim.git
 ```
 
 ## Build
