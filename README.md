@@ -4,14 +4,18 @@ Projet qui simule la mécanique des fluides de manières euleriennes.
 
 ## Installation
 
-git clone le repo
+Clone le repo
+
+```bash
+https://github.com/LaTable007/fluidSim.git
+```
 
 ## Build
 
 Build utilise Ninja
 
 ```bash
-cmake -S . -B build -G "Ninja Multi-Config"
+cmake -s . -b build -g "ninja multi-config"
 ```
 
 Build en version Release:
