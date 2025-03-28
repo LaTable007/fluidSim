@@ -1,4 +1,4 @@
-# Install script for directory: /Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/src/SFML/Window
+# Install script for directory: /Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/src/SFML/Window
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "")
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -38,33 +38,79 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "bin" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-window.2.5.1.dylib"
-    "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-window.2.5.dylib"
-    )
-  foreach(file
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.1.dylib"
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.dylib"
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-window-d.2.5.1.dylib"
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-window-d.2.5.dylib"
       )
-    if(EXISTS "${file}" AND
-       NOT IS_SYMLINK "${file}")
-      execute_process(COMMAND /usr/bin/install_name_tool
-        -delete_rpath "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib"
-        "${file}")
-      if(CMAKE_INSTALL_DO_STRIP)
-        execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "${file}")
+    foreach(file
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window-d.2.5.1.dylib"
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window-d.2.5.dylib"
+        )
+      if(EXISTS "${file}" AND
+         NOT IS_SYMLINK "${file}")
+        execute_process(COMMAND /usr/bin/install_name_tool
+          -delete_rpath "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug"
+          "${file}")
+        if(CMAKE_INSTALL_DO_STRIP)
+          execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "${file}")
+        endif()
       endif()
-    endif()
-  endforeach()
+    endforeach()
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-window.2.5.1.dylib"
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-window.2.5.dylib"
+      )
+    foreach(file
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.1.dylib"
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.dylib"
+        )
+      if(EXISTS "${file}" AND
+         NOT IS_SYMLINK "${file}")
+        execute_process(COMMAND /usr/bin/install_name_tool
+          -delete_rpath "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release"
+          "${file}")
+        if(CMAKE_INSTALL_DO_STRIP)
+          execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "${file}")
+        endif()
+      endif()
+    endforeach()
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-window.2.5.1.dylib"
+      "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-window.2.5.dylib"
+      )
+    foreach(file
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.1.dylib"
+        "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libsfml-window.2.5.dylib"
+        )
+      if(EXISTS "${file}" AND
+         NOT IS_SYMLINK "${file}")
+        execute_process(COMMAND /usr/bin/install_name_tool
+          -delete_rpath "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo"
+          "${file}")
+        if(CMAKE_INSTALL_DO_STRIP)
+          execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "${file}")
+        endif()
+      endif()
+    endforeach()
+  endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "bin" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-window.dylib")
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-window-d.dylib")
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-window.dylib")
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-window.dylib")
+  endif()
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/src/SFML/Window/install_local_manifest.txt"
+  file(WRITE "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/src/SFML/Window/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

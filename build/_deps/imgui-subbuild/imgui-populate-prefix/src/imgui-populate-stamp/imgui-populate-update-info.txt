@@ -4,4 +4,4 @@
 
 command (connected)=/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake;-Dcan_fetch=YES;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/tmp/imgui-populate-gitupdate.cmake
 command (disconnected)=/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake;-Dcan_fetch=NO;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/tmp/imgui-populate-gitupdate.cmake
-work_dir=/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-src
+work_dir=/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-src

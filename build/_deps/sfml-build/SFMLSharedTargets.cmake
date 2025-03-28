@@ -50,14 +50,14 @@ unset(_cmake_expected_targets)
 add_library(sfml-system SHARED IMPORTED)
 
 set_target_properties(sfml-system PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/include"
 )
 
 # Create imported target sfml-window
 add_library(sfml-window SHARED IMPORTED)
 
 set_target_properties(sfml-window PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/include"
   INTERFACE_LINK_LIBRARIES "sfml-system"
 )
 
@@ -73,7 +73,7 @@ set_target_properties(OpenGL PROPERTIES
 add_library(sfml-graphics SHARED IMPORTED)
 
 set_target_properties(sfml-graphics PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/include"
   INTERFACE_LINK_LIBRARIES "sfml-window"
 )
 
@@ -81,29 +81,71 @@ set_target_properties(sfml-graphics PROPERTIES
 add_library(Freetype INTERFACE IMPORTED)
 
 set_target_properties(Freetype PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/extlibs/headers/freetype2;/opt/homebrew/include/freetype2"
-  INTERFACE_LINK_LIBRARIES "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src/extlibs/libs-osx/Frameworks/freetype.framework"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/extlibs/headers/freetype2;/opt/homebrew/include/freetype2"
+  INTERFACE_LINK_LIBRARIES "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src/extlibs/libs-osx/Frameworks/freetype.framework"
 )
 
-# Import target "sfml-system" for configuration ""
-set_property(TARGET sfml-system APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+# Import target "sfml-system" for configuration "Debug"
+set_property(TARGET sfml-system APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(sfml-system PROPERTIES
-  IMPORTED_LOCATION_NOCONFIG "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-system.2.5.1.dylib"
-  IMPORTED_SONAME_NOCONFIG "@rpath/libsfml-system.2.5.dylib"
+  IMPORTED_LOCATION_DEBUG "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-system-d.2.5.1.dylib"
+  IMPORTED_SONAME_DEBUG "@rpath/libsfml-system-d.2.5.dylib"
   )
 
-# Import target "sfml-window" for configuration ""
-set_property(TARGET sfml-window APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+# Import target "sfml-window" for configuration "Debug"
+set_property(TARGET sfml-window APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(sfml-window PROPERTIES
-  IMPORTED_LOCATION_NOCONFIG "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-window.2.5.1.dylib"
-  IMPORTED_SONAME_NOCONFIG "@rpath/libsfml-window.2.5.dylib"
+  IMPORTED_LOCATION_DEBUG "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-window-d.2.5.1.dylib"
+  IMPORTED_SONAME_DEBUG "@rpath/libsfml-window-d.2.5.dylib"
   )
 
-# Import target "sfml-graphics" for configuration ""
-set_property(TARGET sfml-graphics APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+# Import target "sfml-graphics" for configuration "Debug"
+set_property(TARGET sfml-graphics APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(sfml-graphics PROPERTIES
-  IMPORTED_LOCATION_NOCONFIG "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build/lib/libsfml-graphics.2.5.1.dylib"
-  IMPORTED_SONAME_NOCONFIG "@rpath/libsfml-graphics.2.5.dylib"
+  IMPORTED_LOCATION_DEBUG "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Debug/libsfml-graphics-d.2.5.1.dylib"
+  IMPORTED_SONAME_DEBUG "@rpath/libsfml-graphics-d.2.5.dylib"
+  )
+
+# Import target "sfml-system" for configuration "Release"
+set_property(TARGET sfml-system APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(sfml-system PROPERTIES
+  IMPORTED_LOCATION_RELEASE "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-system.2.5.1.dylib"
+  IMPORTED_SONAME_RELEASE "@rpath/libsfml-system.2.5.dylib"
+  )
+
+# Import target "sfml-window" for configuration "Release"
+set_property(TARGET sfml-window APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(sfml-window PROPERTIES
+  IMPORTED_LOCATION_RELEASE "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-window.2.5.1.dylib"
+  IMPORTED_SONAME_RELEASE "@rpath/libsfml-window.2.5.dylib"
+  )
+
+# Import target "sfml-graphics" for configuration "Release"
+set_property(TARGET sfml-graphics APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(sfml-graphics PROPERTIES
+  IMPORTED_LOCATION_RELEASE "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/Release/libsfml-graphics.2.5.1.dylib"
+  IMPORTED_SONAME_RELEASE "@rpath/libsfml-graphics.2.5.dylib"
+  )
+
+# Import target "sfml-system" for configuration "RelWithDebInfo"
+set_property(TARGET sfml-system APPEND PROPERTY IMPORTED_CONFIGURATIONS RELWITHDEBINFO)
+set_target_properties(sfml-system PROPERTIES
+  IMPORTED_LOCATION_RELWITHDEBINFO "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-system.2.5.1.dylib"
+  IMPORTED_SONAME_RELWITHDEBINFO "@rpath/libsfml-system.2.5.dylib"
+  )
+
+# Import target "sfml-window" for configuration "RelWithDebInfo"
+set_property(TARGET sfml-window APPEND PROPERTY IMPORTED_CONFIGURATIONS RELWITHDEBINFO)
+set_target_properties(sfml-window PROPERTIES
+  IMPORTED_LOCATION_RELWITHDEBINFO "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-window.2.5.1.dylib"
+  IMPORTED_SONAME_RELWITHDEBINFO "@rpath/libsfml-window.2.5.dylib"
+  )
+
+# Import target "sfml-graphics" for configuration "RelWithDebInfo"
+set_property(TARGET sfml-graphics APPEND PROPERTY IMPORTED_CONFIGURATIONS RELWITHDEBINFO)
+set_target_properties(sfml-graphics PROPERTIES
+  IMPORTED_LOCATION_RELWITHDEBINFO "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build/lib/RelWithDebInfo/libsfml-graphics.2.5.1.dylib"
+  IMPORTED_SONAME_RELWITHDEBINFO "@rpath/libsfml-graphics.2.5.dylib"
   )
 
 # This file does not depend on other imported targets which have

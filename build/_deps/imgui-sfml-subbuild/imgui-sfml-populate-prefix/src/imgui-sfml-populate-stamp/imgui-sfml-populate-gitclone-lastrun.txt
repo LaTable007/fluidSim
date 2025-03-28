@@ -4,8 +4,8 @@
 
 method=git
 command=/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-sfml-subbuild/imgui-sfml-populate-prefix/tmp/imgui-sfml-populate-gitclone.cmake
-source_dir=/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-sfml-src
-work_dir=/Users/noahdubuc/Codes/fluidSim/build/_deps
+source_dir=/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-sfml-src
+work_dir=/Users/noahdubuc/codes/fluidSim/build/_deps
 repository=https://github.com/SFML/imgui-sfml
 remote=origin
 init_submodules=TRUE

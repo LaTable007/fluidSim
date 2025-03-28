@@ -4,8 +4,8 @@
 
 method=git
 command=/opt/homebrew/Cellar/cmake/3.31.0/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/tmp/imgui-populate-gitclone.cmake
-source_dir=/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-src
-work_dir=/Users/noahdubuc/Codes/fluidSim/build/_deps
+source_dir=/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-src
+work_dir=/Users/noahdubuc/codes/fluidSim/build/_deps
 repository=https://github.com/ocornut/imgui
 remote=origin
 init_submodules=TRUE

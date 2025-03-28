@@ -6,11 +6,11 @@ cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 # If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
 # existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
 # would cause a fatal error, even though it would be a no-op.
-if(NOT EXISTS "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-src")
-  file(MAKE_DIRECTORY "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-src")
+if(NOT EXISTS "/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-src")
+  file(MAKE_DIRECTORY "/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-src")
 endif()
 file(MAKE_DIRECTORY
-  "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-build"
+  "/Users/noahdubuc/codes/fluidSim/build/_deps/imgui-build"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/tmp"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
@@ -18,7 +18,7 @@ file(MAKE_DIRECTORY
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
 )
 
-set(configSubDirs )
+set(configSubDirs Debug)
 foreach(subDir IN LISTS configSubDirs)
     file(MAKE_DIRECTORY "/Users/noahdubuc/Codes/fluidSim/build/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/${subDir}")
 endforeach()

@@ -6,11 +6,11 @@ cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 # If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
 # existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
 # would cause a fatal error, even though it would be a no-op.
-if(NOT EXISTS "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src")
-  file(MAKE_DIRECTORY "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-src")
+if(NOT EXISTS "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src")
+  file(MAKE_DIRECTORY "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-src")
 endif()
 file(MAKE_DIRECTORY
-  "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-build"
+  "/Users/noahdubuc/codes/fluidSim/build/_deps/sfml-build"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-subbuild/sfml-populate-prefix"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-subbuild/sfml-populate-prefix/tmp"
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
@@ -18,7 +18,7 @@ file(MAKE_DIRECTORY
   "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
 )
 
-set(configSubDirs )
+set(configSubDirs Debug)
 foreach(subDir IN LISTS configSubDirs)
     file(MAKE_DIRECTORY "/Users/noahdubuc/Codes/fluidSim/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/${subDir}")
 endforeach()
