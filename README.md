@@ -17,14 +17,13 @@ On build avec Ninja afin d'avoir une exécutable en Release mode et une en debug
 ```bash
 cmake -s . -b build -g "ninja multi-config"
 ```
-
-Build en version Release:
+Une fois que c'est fait on peut build soit l'executable en version Release. 
 
 ```bash
 cmake --build build --config Release
 ```
 
-Build en version Debug:
+Soit en version Debug. 
 
 ```bash
 cmake --build build --config Debug
