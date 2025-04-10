@@ -2,6 +2,7 @@
 #define BALLE_H
 
 #include <SFML/Graphics.hpp>
+#include <cstdint>
 #include <functional>
 #include <utility>
 #include <vector>
@@ -14,7 +15,7 @@ public:
   void draw(sf::RenderWindow &window);
   void draw(sf::RenderWindow &window, const sf::Color &overrideColor);
 
-  void updateColor(sf::Uint8 *r, sf::Uint8 *g, sf::Uint8 *b);
+  void updateColor(uint8_t *r, uint8_t *g, uint8_t *b);
 
   float smoothingKernel(float radius, float dst);
   float smoothingKernelDiravative(float radius, float dst);

@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(
     sfml
     GIT_REPOSITORY "https://github.com/SFML/SFML"
-    GIT_TAG 2f11710abc5aa478503a7ff3f9e654bd2078ebab
+    GIT_TAG master
 )
 set(SFML_BUILD_AUDIO FALSE) # Désactiver les modules inutiles
 set(SFML_BUILD_NETWORK FALSE)
@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(sfml)
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY "https://github.com/ocornut/imgui"
-    GIT_TAG 35b1148efb839381b84de9290d9caf0b66ad7d03
+    GIT_TAG master
 )
 FetchContent_MakeAvailable(imgui)
 
@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(imgui)
 FetchContent_Declare(
     imgui-sfml
     GIT_REPOSITORY "https://github.com/SFML/imgui-sfml"
-    GIT_TAG 82dc2033e51b8323857c3ae1cf1f458b3a933c35
+    GIT_TAG master
 )
 set(IMGUI_DIR ${imgui_SOURCE_DIR})
 set(IMGUI_SFML_FIND_SFML OFF)

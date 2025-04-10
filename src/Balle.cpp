@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 // Constructeur
@@ -10,7 +11,7 @@ Balle::Balle(float radius, sf::Vector2f startPos, sf::Vector2f startVelocity)
     : shape(radius), velocity(startVelocity), density(0.0f) {
   shape.setPosition(startPos);
   shape.setFillColor(sf::Color::Red);
-  shape.setOrigin(radius, radius);
+  shape.setOrigin(sf::Vector2f(radius, radius));
 }
 
 // Mise à jour de la position
@@ -30,20 +31,20 @@ void Balle::draw(sf::RenderWindow &window, const sf::Color &overrideColor) {
   float radius = shape.getRadius();
   sf::Vector2f position = shape.getPosition();
   sf::CircleShape circle(radius);
-  circle.setOrigin(radius, radius);
+  circle.setOrigin(sf::Vector2f(radius, radius));
   circle.setPosition(position);
 
   if (overrideColor != sf::Color::Transparent) {
     circle.setFillColor(overrideColor);
   } else {
-    sf::Uint8 r, g, b;
+    uint8_t r, g, b;
     updateColor(&r, &g, &b);
     circle.setFillColor(sf::Color(r, g, b));
   }
   window.draw(circle);
 }
 
-void Balle::updateColor(sf::Uint8 *r, sf::Uint8 *g, sf::Uint8 *b) {
+void Balle::updateColor(uint8_t *r, uint8_t *g, uint8_t *b) {
   float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
   float minSpeed = 0.f;
   float maxSpeed = 500.f;
@@ -54,7 +55,7 @@ void Balle::updateColor(sf::Uint8 *r, sf::Uint8 *g, sf::Uint8 *b) {
   float factor = (speed - minSpeed) / (maxSpeed - minSpeed);
   struct ControlPoint {
     float t;
-    sf::Uint8 r, g, b;
+    uint8_t r, g, b;
   };
   static const ControlPoint controlPoints[] = {{0.0f, 12, 7, 134},
                                                {0.25f, 73, 27, 167},
@@ -78,13 +79,13 @@ void Balle::updateColor(sf::Uint8 *r, sf::Uint8 *g, sf::Uint8 *b) {
     if (factor >= controlPoints[i].t && factor < controlPoints[i + 1].t) {
       float localFactor = (factor - controlPoints[i].t) /
                           (controlPoints[i + 1].t - controlPoints[i].t);
-      *r = static_cast<sf::Uint8>(
+      *r = static_cast<uint8_t>(
           controlPoints[i].r +
           localFactor * (controlPoints[i + 1].r - controlPoints[i].r));
-      *g = static_cast<sf::Uint8>(
+      *g = static_cast<uint8_t>(
           controlPoints[i].g +
           localFactor * (controlPoints[i + 1].g - controlPoints[i].g));
-      *b = static_cast<sf::Uint8>(
+      *b = static_cast<uint8_t>(
           controlPoints[i].b +
           localFactor * (controlPoints[i + 1].b - controlPoints[i].b));
       return;
@@ -223,7 +224,7 @@ float Balle::calculateSharedPressure(float densityA, float densityB,
 
 void Balle::setRadius(float radius) {
   shape.setRadius(radius);
-  shape.setOrigin(radius, radius);
+  shape.setOrigin(sf::Vector2f(radius, radius));
 }
 
 // Fonctions utilitaires pour la spatialisation

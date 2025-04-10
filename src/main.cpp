@@ -11,25 +11,26 @@
 #include <iostream>
 
 int main() {
-  sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
-  sf::RenderWindow window(fullscreenMode, "ImGui + SFML = <3",
-                          sf::Style::Fullscreen);
-  ImGui::SFML::Init(window);
-  ImGui::GetIO().FontGlobalScale = 2.0f;
+  sf::VideoMode mode = sf::VideoMode::getDesktopMode();
+  sf::RenderWindow window(mode, "Ma simulation", sf::State::Fullscreen);
 
-  float x1 = 100, x2 = 2825, y1 = 50, y2 = 1750;
+  window.setFramerateLimit(60);
+  ImGui::SFML::Init(window);
+  ImGui::GetIO().FontGlobalScale = 1.0f;
+
+  float x1 = 50, x2 = 1390, y1 = 50, y2 = 850;
   Box box(x1, x2, y1, y2);
 
   // Paramètres pour les balles
-  float ballRadius = 15.f;
-  int numParticles = 4000;
+  float ballRadius = 5.f;
+  int numParticles = 5000;
   float dampingRatio = 0.5f;
   float spacing = 5.0f;
-  float smoothingRadius = 50.0f;
+  float smoothingRadius = 25.0f;
   float targetDensity = 1.0f;
   float pressureMultiplier = 1.0f;
   float mass = 0.01f;
-  float mouseRadius = 400.0f;
+  float mouseRadius = 100.0f;
   float viscosity = 0.6f;
   sf::Vector2f gravity(0.f, 0.0f);
 
@@ -52,15 +53,16 @@ int main() {
                                             sf::Vector2f(0.f, 0.f));
   startRandom(balles, numParticles, ballRadius, box);
 
-  sf::Clock deltaClock;
   const float mouseForce = 1500.0f;
 
+  sf::Clock deltaClock;
   while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      ImGui::SFML::ProcessEvent(event);
-      if (event.type == sf::Event::Closed)
+    while (const auto event = window.pollEvent()) {
+      ImGui::SFML::ProcessEvent(window, *event);
+
+      if (event->is<sf::Event::Closed>()) {
         window.close();
+      }
     }
 
     // Temps écoulé
@@ -104,16 +106,13 @@ int main() {
       }
       if (!clic) {
         // Application de la force de la souris (attraction ou répulsion)
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) ||
-            sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
           for (auto &balle : balles) {
             sf::Vector2f pos = balle.getPosition();
             sf::Vector2f diff = mousePos - pos;
             float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
             if (distance < mouseRadius && distance > 0.0f) {
               sf::Vector2f direction = diff / distance;
-              if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-                direction = -direction;
               balle.setVelocity(balle.getVelocity() +
                                 direction * mouseForce * dt);
             }
@@ -199,18 +198,9 @@ int main() {
       circle.setFillColor(sf::Color::Transparent);
       circle.setOutlineColor(sf::Color::Green);
       circle.setOutlineThickness(2);
-      circle.setOrigin(smoothingRadius, smoothingRadius);
+      circle.setOrigin(sf::Vector2f(smoothingRadius, smoothingRadius));
       circle.setPosition(balles[selectedParticle].getPosition());
       window.draw(circle);
-
-      sf::Vector2f pos = balles[selectedParticle].getPosition();
-      sf::Vector2f vel = balles[selectedParticle].getVelocity();
-      sf::VertexArray velocityLine(sf::Lines, 2);
-      velocityLine[0].position = pos;
-      velocityLine[0].color = sf::Color::Yellow;
-      velocityLine[1].position = pos + vel;
-      velocityLine[1].color = sf::Color::Yellow;
-      window.draw(velocityLine);
     }
 
     ImGui::SFML::Render(window);

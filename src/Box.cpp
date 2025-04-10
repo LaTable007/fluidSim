@@ -10,7 +10,7 @@ Box::Box(float x1, float x2, float y1, float y2)
   float height = std::abs(y2 - y1);
 
   // Configurer l'objet RectangleShape
-  shape.setPosition(left, top);
+  shape.setPosition(sf::Vector2f(left, top));
   shape.setSize(sf::Vector2f(width, height));
   shape.setFillColor(sf::Color::Transparent);
   shape.setOutlineThickness(2.f);
