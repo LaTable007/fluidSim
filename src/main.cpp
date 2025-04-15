@@ -23,7 +23,7 @@ int main() {
 
   // Paramètres pour les balles
   float ballRadius = 5.f;
-  int numParticles = 5000;
+  int numParticles = 4000;
   float dampingRatio = 0.5f;
   float spacing = 5.0f;
   float smoothingRadius = 25.0f;
@@ -106,13 +106,16 @@ int main() {
       }
       if (!clic) {
         // Application de la force de la souris (attraction ou répulsion)
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) ||
+            sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
           for (auto &balle : balles) {
             sf::Vector2f pos = balle.getPosition();
             sf::Vector2f diff = mousePos - pos;
             float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
             if (distance < mouseRadius && distance > 0.0f) {
               sf::Vector2f direction = diff / distance;
+              if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+                direction = -direction;
               balle.setVelocity(balle.getVelocity() +
                                 direction * mouseForce * dt);
             }
@@ -145,8 +148,8 @@ int main() {
       ImGui::Text("Force de viscosité: (%.5f, %.5f)", visForce.x, visForce.y);
     }
     ImGui::SliderFloat("PressureMultiplier", &pressureMultiplier, 0.1f, 20.0f);
-    ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 25.0f, 500.0f);
-    ImGui::SliderFloat("TargetDensity", &targetDensity, 0.1f, 100.0f);
+    ImGui::SliderFloat("SmoothingRadius", &smoothingRadius, 15.0f, 50.0f);
+    ImGui::SliderFloat("TargetDensity", &targetDensity, 0.01f, 1.0f);
     ImGui::SliderFloat("Gravity", &gravity.y, 0.0f, 1000.0f);
     ImGui::SliderFloat("Mass", &mass, 0.01f, 0.1f);
     ImGui::SliderFloat("Viscosity", &viscosity, 0.0f, 1.0f);

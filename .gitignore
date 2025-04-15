@@ -34,3 +34,9 @@
 .idea/
 build/
 bin/
+
+.cache/
+
+.DS_Store
+.github
+imgui.ini
